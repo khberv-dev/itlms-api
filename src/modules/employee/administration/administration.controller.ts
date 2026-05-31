@@ -32,8 +32,8 @@ export class AdministrationController {
   @Put(':id')
   @ApiOperation({ summary: 'Method: update' })
   @HttpCode(HttpStatus.OK)
-  async update(@Param('id') id: string, @Body() data: UpdateAdministrationDto, @Req() req) {
-    return await this.administrationService;
+  async update(@Param('id') id: string, @Body() data: UpdateAdministrationDto) {
+    return await this.administrationService.update(id, data);
   }
 
   @Delete(':id')

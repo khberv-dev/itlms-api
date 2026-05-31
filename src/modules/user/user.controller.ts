@@ -11,7 +11,7 @@ export class UserController {
   @ApiOperation({ summary: 'Method: get me' })
   @HttpCode(HttpStatus.OK)
   async findOne(@Req() req) {
-    return await this.userService.getMe(req.user.id, req.user.role);
+    return await this.userService.getMe(req.user.user_id ?? req.user.id, req.user.role);
   }
 
   @Patch('/password/:id')

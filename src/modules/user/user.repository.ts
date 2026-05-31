@@ -45,12 +45,11 @@ export class UserRepository {
   async getMe(id: string, role) {
     const user = await this.prismaService.user
       .findFirst({
-        where: { [role]: { id } },
+        where: { id },
         include: { [role]: true },
       })
-      .catch((err) => {
-        console.log(id, role);
-        throw new BadRequestException(err.toString());
+      .catch(() => {
+        throw new BadRequestException();
       });
     return { ...user, password: null };
   }
