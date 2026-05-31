@@ -6,10 +6,7 @@ import { StudentStatusModule } from '../student-status/student-status.module';
 import { PrismaModule } from '../_prisma/prisma.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    StudentStatusModule,
-  ],
+  imports: [PrismaModule, StudentStatusModule],
   controllers: [StudentDroppedController],
   providers: [StudentDroppedService, StudentDroppedRepository],
   exports: [StudentDroppedService],

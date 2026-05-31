@@ -11,7 +11,8 @@ ALTER TABLE "group" DROP COLUMN "title",
 ADD COLUMN     "name" TEXT NOT NULL;
 
 -- AlterTable
-ALTER TABLE "user" ADD COLUMN     "email" TEXT;
+ALTER TABLE "user"
+    ADD COLUMN "email" TEXT;
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+CREATE UNIQUE INDEX "user_email_key" ON "user" ("email");

@@ -1,13 +1,12 @@
-
-
 model seller_month_plan {
-  id             String       @id @default(uuid())
-  year           Int?         @default(dbgenerated("EXTRACT(YEAR FROM CURRENT_DATE)"))
-  month          Int?         @default(dbgenerated("EXTRACT(MONTH FROM CURRENT_DATE)"))
-  plan           Decimal      @db.Decimal(18, 0)
-  sale           Decimal?     @db.Decimal(18, 0)
+  id    String   @id @default(uuid())
+  year  Int?     @default(dbgenerated("EXTRACT(YEAR FROM CURRENT_DATE)"))
+  month Int?     @default(dbgenerated("EXTRACT(MONTH FROM CURRENT_DATE)"))
+  plan  Decimal  @db.Decimal(18, 0)
+  sale  Decimal? @db.Decimal(18, 0)
 
-  seller         seller   @relation(fields: [seller_id], references: [id])
-  seller_id      String
+  seller    seller @relation(fields: [seller_id], references: [id])
+  seller_id String
+
   @@unique([seller_id, year, month])
 }

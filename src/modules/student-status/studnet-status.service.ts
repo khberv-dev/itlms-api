@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { StudentStatusRepository } from './/student-status.repository';
 import { ChangeStudentStatusDto } from './dto/student-status.dto';
 import { StudentStatus } from '@prisma/client';
@@ -11,7 +7,13 @@ import { Cron } from '@nestjs/schedule';
 // Qaysi statusdan qaysi statusga o'tish mumkin
 const ALLOWED_TRANSITIONS: Record<StudentStatus, StudentStatus[]> = {
   new: [StudentStatus.active, StudentStatus.blocked],
-  active: [StudentStatus.expired, StudentStatus.blocked, StudentStatus.frozen, StudentStatus.dropped, StudentStatus.completed],
+  active: [
+    StudentStatus.expired,
+    StudentStatus.blocked,
+    StudentStatus.frozen,
+    StudentStatus.dropped,
+    StudentStatus.completed,
+  ],
   expired: [StudentStatus.active, StudentStatus.blocked, StudentStatus.dropped, StudentStatus.completed],
   blocked: [StudentStatus.active],
   frozen: [], // frozen statusi uchun transition'lar boshqa logika bilan boshqariladi
@@ -19,16 +21,11 @@ const ALLOWED_TRANSITIONS: Record<StudentStatus, StudentStatus[]> = {
   completed: [], // completed statusidan boshqa statusga o'tish odatda bo'lmaydi
 };
 
-
 @Injectable()
 export class StudentStatusService {
-  constructor(private readonly studentStatusRepo: StudentStatusRepository) { }
+  constructor(private readonly studentStatusRepo: StudentStatusRepository) {}
 
-  async changeStatus(
-    student_id: string,
-    dto: ChangeStudentStatusDto,
-    changed_by_id?: string,
-  ) {
+  async changeStatus(student_id: string, dto: ChangeStudentStatusDto, changed_by_id?: string) {
     // 1. Student mavjudligini tekshirish
     const student = await this.studentStatusRepo.findStudentById(student_id);
     if (!student) {
@@ -39,23 +36,17 @@ export class StudentStatusService {
 
     // 2. Bir xil statusga o'tishni bloklash
     if (from_status === dto.to_status) {
-      throw new BadRequestException(
-        `Student allaqachon ${dto.to_status} statusida`,
-      );
+      throw new BadRequestException(`Student allaqachon ${dto.to_status} statusida`);
     }
 
     // 3. Ruxsat etilgan transition tekshirish
     const allowed = ALLOWED_TRANSITIONS[from_status as StudentStatus] ?? [];
     if (!allowed.includes(dto.to_status) && allowed.length > 0) {
-      throw new BadRequestException(
-        `${from_status} => ${dto.to_status} o'tish mumkin emas`,
-      );
+      throw new BadRequestException(`${from_status} => ${dto.to_status} o'tish mumkin emas`);
     }
 
-
     // 5. Hozirgi guruh snapshot olish
-    const currentGroup =
-      await this.studentStatusRepo.getStudentCurrentGroup(student_id);
+    const currentGroup = await this.studentStatusRepo.getStudentCurrentGroup(student_id);
 
     // 6. Transaction: status tarixi yozish + student statusini yangilash
     const [statusRecord] = await Promise.all([
@@ -76,18 +67,13 @@ export class StudentStatusService {
   }
 
   // Cron job uchun — avtomatik expired qilish
-  async changeStatusAuto(
-    student_id: string,
-    to_status: StudentStatus,
-    comment: string,
-  ) {
+  async changeStatusAuto(student_id: string, to_status: StudentStatus, comment: string) {
     const student = await this.studentStatusRepo.findStudentById(student_id);
     if (!student) return null;
 
     if (student.status === to_status) return null;
 
-    const currentGroup =
-      await this.studentStatusRepo.getStudentCurrentGroup(student_id);
+    const currentGroup = await this.studentStatusRepo.getStudentCurrentGroup(student_id);
 
     const [statusRecord] = await Promise.all([
       this.studentStatusRepo.create({
@@ -110,15 +96,15 @@ export class StudentStatusService {
     await this.studentStatusRepo.create({
       from_status: null,
       to_status: StudentStatus.new,
-      student_id: id
-    })
+      student_id: id,
+    });
   }
 
   async getStudentStatusHistory(page, limit, student_id: string) {
-    const where: any = {}
+    const where: any = {};
 
     if (student_id) {
-      where.student_id = student_id
+      where.student_id = student_id;
     }
 
     const data = await this.studentStatusRepo.findAll(page, limit, where);
@@ -130,18 +116,17 @@ export class StudentStatusService {
         from_status: d.from_status,
         to_status: d.to_status,
         comment: d.comment,
-        date: d.changed_at
-      }
-    })
+        date: d.changed_at,
+      };
+    });
 
-    return { ...data, items: res }
-
+    return { ...data, items: res };
   }
 
   async getStatusCounts(startDate: string, endDate: string) {
-    const result = await this.studentStatusRepo.getStatusCounts(startDate, endDate)
+    const result = await this.studentStatusRepo.getStatusCounts(startDate, endDate);
 
-    return result.map(item => ({
+    return result.map((item) => ({
       status: item.to_status,
       count: item._count.to_status,
     }));
@@ -156,11 +141,7 @@ export class StudentStatusService {
     }
     const results = await Promise.allSettled(
       expiredStudents.map((student) =>
-        this.changeStatusAuto(
-          student.id,
-          StudentStatus.expired,
-          'Access period has expired',
-        ),
+        this.changeStatusAuto(student.id, StudentStatus.expired, 'Access period has expired'),
       ),
     );
   }

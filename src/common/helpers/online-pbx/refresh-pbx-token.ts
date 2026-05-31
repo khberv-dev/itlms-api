@@ -1,5 +1,5 @@
-import axios from "axios";
-import Redis from "ioredis";
+import axios from 'axios';
+import Redis from 'ioredis';
 
 const redis = new Redis();
 const DOMAIN = process.env.ONLINE_PBX_DOMAIN;
@@ -16,7 +16,7 @@ async function refreshPbxToken() {
   await redis.set('pbx:key_id', key_id);
   await redis.set(
     'pbx:expired_at',
-    Date.now() + 2.5 * 24 * 60 * 60 * 1000 // 2.5 kun
+    Date.now() + 2.5 * 24 * 60 * 60 * 1000, // 2.5 kun
   );
 
   return { key, key_id };

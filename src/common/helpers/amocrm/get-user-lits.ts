@@ -10,7 +10,7 @@ async function getAmocrmUsers() {
     });
 
     const users = response.data._embedded.users;
-    const userIds = users.map(u => ({ id: u.id, name: u.name }));
+    const userIds = users.map((u) => ({ id: u.id, name: u.name }));
 
     return userIds;
   } catch (error) {

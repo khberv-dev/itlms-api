@@ -1,10 +1,8 @@
-
-
 function generateStrongPassword(length: number = 12): string {
-  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const lower = "abcdefghijklmnopqrstuvwxyz";
-  const numbers = "0123456789";
-  const symbols = "!@#$%^&*()_+[]{}|;:,.<>?";
+  const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lower = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  const symbols = '!@#$%^&*()_+[]{}|;:,.<>?';
 
   const allChars = upper + lower + numbers + symbols;
 
@@ -22,9 +20,7 @@ function generateStrongPassword(length: number = 12): string {
   }
 
   // Belgilarni aralashtirib yuborish (shuffle)
-  return password
-    .sort(() => Math.random() - 0.5)
-    .join("");
+  return password.sort(() => Math.random() - 0.5).join('');
 }
 
 export default generateStrongPassword;

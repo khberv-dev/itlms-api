@@ -19,7 +19,9 @@ export class GroupSnapshotQueryDto extends SnapshotRangeQueryDto {
 }
 
 export class MentorSnapshotQueryDto extends SnapshotRangeQueryDto {
-  @ApiPropertyOptional({ description: 'Mentor ID (berilmasa barcha mentorlar)' })
+  @ApiPropertyOptional({
+    description: 'Mentor ID (berilmasa barcha mentorlar)',
+  })
   @IsOptional()
   @IsUUID()
   mentor_id?: string;

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StudentStatus } from '@prisma/client';
-import { IsEnum, IsOptional, IsString, IsBoolean, IsUUID } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class ChangeStudentStatusDto {
   @ApiProperty({ enum: StudentStatus, description: 'Yangi status' })

@@ -1,19 +1,18 @@
 import {
-  WebSocketGateway,
-  WebSocketServer,
+  ConnectedSocket,
   OnGatewayInit,
   SubscribeMessage,
-  ConnectedSocket,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import type { Cache } from 'cache-manager';
 import { Server, Socket } from 'socket.io';
 import { Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+
 @WebSocketGateway()
 export class WebGateway implements OnGatewayInit {
-  constructor(
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
-  ) { }
+  constructor(@Inject(CACHE_MANAGER) private cacheService: Cache) {}
 
   @WebSocketServer()
   server: Server;
@@ -24,10 +23,7 @@ export class WebGateway implements OnGatewayInit {
   }
 
   async handleConnection(@ConnectedSocket() client: Socket) {
-    await this.cacheService.set(
-      `socket${client.handshake.query.userId}`,
-      client.id,
-    );
+    await this.cacheService.set(`socket${client.handshake.query.userId}`, client.id);
     this.server.to(client.id).emit('message', 'you connected successfully');
   }
 
@@ -45,9 +41,7 @@ export class WebGateway implements OnGatewayInit {
     client.leave(room);
   }
 
-
   async handleNewSale(data) {
     this.server.emit('new-sale', data);
   }
-
 }

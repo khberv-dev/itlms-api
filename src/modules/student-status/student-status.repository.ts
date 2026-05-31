@@ -17,7 +17,7 @@ interface CreateStatusParams {
 
 @Injectable()
 export class StudentStatusRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   // Student hozirgi aktiv guruh ma'lumotlarini olish (snapshot uchun)
   async getStudentCurrentGroup(student_id: string) {
@@ -106,26 +106,26 @@ export class StudentStatusRepository {
   }
 
   // Studentning barcha status tarixini olish
-  async findAll(page,limit,where) {
-    return  await prismaPaginate(this.prisma.student_status, {
+  async findAll(page, limit, where) {
+    return (await prismaPaginate(this.prisma.student_status, {
       where,
       page,
       limit,
       orderBy: { changed_at: 'desc' },
       include: {
-        student:{
-          include:{
-            user:{
-              select:{
-                first_name:true,
-                last_name:true,
-                id:true
-              }
-            }
-          }
-        }
+        student: {
+          include: {
+            user: {
+              select: {
+                first_name: true,
+                last_name: true,
+                id: true,
+              },
+            },
+          },
+        },
       },
-    }) as any
+    })) as any;
   }
 
   // Student mavjudligini tekshirish
@@ -160,12 +160,12 @@ export class StudentStatusRepository {
     });
   }
 
-  async findExpiredStudents(){
+  async findExpiredStudents() {
     return await this.prisma.student.findMany({
-      where:{
-        access_expires_at:{lt: new Date()},
-        status: StudentStatus.active
-      }
-    })
+      where: {
+        access_expires_at: { lt: new Date() },
+        status: StudentStatus.active,
+      },
+    });
   }
 }

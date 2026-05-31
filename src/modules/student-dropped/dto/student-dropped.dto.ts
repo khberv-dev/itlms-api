@@ -1,13 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DroppedReason } from '@prisma/client';
-import { IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateDroppedDto {
-  @ApiProperty({ enum: DroppedReason, description: 'To\'xtatish sababi' })
+  @ApiProperty({ enum: DroppedReason, description: "To'xtatish sababi" })
   @IsEnum(DroppedReason)
   reason: DroppedReason;
 
-  @ApiPropertyOptional({ description: 'Qo\'shimcha izoh' })
+  @ApiPropertyOptional({ description: "Qo'shimcha izoh" })
   @IsOptional()
   @IsString()
   comment?: string;

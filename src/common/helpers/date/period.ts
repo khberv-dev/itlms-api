@@ -18,11 +18,7 @@ export interface MonthPeriodStatus {
   h2_completed: boolean;
 }
 
-export function getPeriodRange(
-  year: number,
-  month: number,
-  period: PeriodType,
-): PeriodRange {
+export function getPeriodRange(year: number, month: number, period: PeriodType): PeriodRange {
   switch (period) {
     case 'h1':
       return {
@@ -44,22 +40,13 @@ export function getPeriodRange(
 }
 
 // Berilgan period tugaganmi yoki hali davom etyaptimi
-export function isPeriodCompleted(
-  year: number,
-  month: number,
-  period: PeriodType,
-  now: Date = new Date(),
-): boolean {
+export function isPeriodCompleted(year: number, month: number, period: PeriodType, now: Date = new Date()): boolean {
   const { end } = getPeriodRange(year, month, period);
   return now >= end;
 }
 
 // Oy uchun barcha period statuslarini qaytaradi
-export function getMonthPeriodStatus(
-  year: number,
-  month: number,
-  now: Date = new Date(),
-): MonthPeriodStatus {
+export function getMonthPeriodStatus(year: number, month: number, now: Date = new Date()): MonthPeriodStatus {
   return {
     year,
     month,

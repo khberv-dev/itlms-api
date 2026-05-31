@@ -17,22 +17,34 @@
 */
 -- AlterTable
 ALTER TABLE "seller_daily_statistic" DROP COLUMN "failed_count",
-DROP COLUMN "income_call_time",
-DROP COLUMN "income_count",
-DROP COLUMN "income_succes_count",
-DROP COLUMN "mentor_income_succes_count",
-DROP COLUMN "mentor_outgoing_succes_count",
-DROP COLUMN "outgoing_call_time",
-DROP COLUMN "outgoing_count",
-DROP COLUMN "outgoing_succes_count",
-DROP COLUMN "succes_count",
-DROP COLUMN "time",
-DROP COLUMN "total_count";
+DROP
+COLUMN "income_call_time",
+DROP
+COLUMN "income_count",
+DROP
+COLUMN "income_succes_count",
+DROP
+COLUMN "mentor_income_succes_count",
+DROP
+COLUMN "mentor_outgoing_succes_count",
+DROP
+COLUMN "outgoing_call_time",
+DROP
+COLUMN "outgoing_count",
+DROP
+COLUMN "outgoing_succes_count",
+DROP
+COLUMN "succes_count",
+DROP
+COLUMN "time",
+DROP
+COLUMN "total_count";
 
 -- CreateTable
-CREATE TABLE "group" (
-    "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
+CREATE TABLE "group"
+(
+    "id"         TEXT         NOT NULL,
+    "title"      TEXT         NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "group_pkey" PRIMARY KEY ("id")

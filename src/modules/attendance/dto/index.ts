@@ -1,1 +1,1 @@
-export { default as CreateAttendanceDto } from './create-attendance.dto'
+export { default as CreateAttendanceDto } from './create-attendance.dto';

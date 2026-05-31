@@ -1,5 +1,3 @@
-const relationId = (id?: string) =>
-  id ? { id } : undefined;
+const relationId = (id?: string) => (id ? { id } : undefined);
 
-
-export default relationId ;
+export default relationId;

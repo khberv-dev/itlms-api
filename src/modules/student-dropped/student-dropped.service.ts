@@ -1,32 +1,20 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { StudentDroppedRepository } from './student-dropped.repository';
 import { StudentStatusService } from '../student-status/studnet-status.service';
 import { CreateDroppedDto, DroppedListQueryDto } from './dto/student-dropped.dto';
 import { StudentStatus } from '@prisma/client';
 
 // Dropped bo'lishi mumkin bo'lgan statuslar
-const DROPPABLE_STATUSES: StudentStatus[] = [
-  StudentStatus.active,
-  StudentStatus.expired,
-  StudentStatus.frozen,
-];
+const DROPPABLE_STATUSES: StudentStatus[] = [StudentStatus.active, StudentStatus.expired, StudentStatus.frozen];
 
 @Injectable()
 export class StudentDroppedService {
   constructor(
     private readonly droppedRepo: StudentDroppedRepository,
     private readonly studentStatusService: StudentStatusService,
-  ) { }
+  ) {}
 
-  async drop(
-    student_id: string,
-    dto: CreateDroppedDto,
-    created_by_id: string,
-  ) {
+  async drop(student_id: string, dto: CreateDroppedDto, created_by_id: string) {
     // 1. Student mavjudligini tekshirish
     const student = await this.droppedRepo.findStudentById(student_id);
     if (!student) {
@@ -35,14 +23,11 @@ export class StudentDroppedService {
 
     // 2. Dropped qilish mumkin bo'lgan statusni tekshirish
     if (!DROPPABLE_STATUSES.includes(student.status as StudentStatus)) {
-      throw new BadRequestException(
-        `${student.status} statusidagi studentni dropped qilib bo'lmaydi`,
-      );
+      throw new BadRequestException(`${student.status} statusidagi studentni dropped qilib bo'lmaydi`);
     }
 
     // 3. Hozirgi guruh snapshotini olish
-    const currentGroup =
-      await this.droppedRepo.getStudentCurrentGroup(student_id);
+    const currentGroup = await this.droppedRepo.getStudentCurrentGroup(student_id);
 
     // 4. Dropped record yaratish
     const dropped = await this.droppedRepo.create({
@@ -87,9 +72,7 @@ export class StudentDroppedService {
     const end = new Date(query.end_date);
 
     if (end < start) {
-      throw new BadRequestException(
-        'end_date start_date dan katta bo\'lishi kerak',
-      );
+      throw new BadRequestException("end_date start_date dan katta bo'lishi kerak");
     }
 
     return this.droppedRepo.findAllByDateRange(start, end);
@@ -117,9 +100,9 @@ export class StudentDroppedService {
   }
 
   async getDroppedReasonCounts(startDate: string, endDate: string) {
-    const result = await this.droppedRepo.getDroppedReasonCounts(startDate,endDate)
+    const result = await this.droppedRepo.getDroppedReasonCounts(startDate, endDate);
 
-    return result.map(item => ({
+    return result.map((item) => ({
       reason: item.reason,
       count: item._count.reason,
     }));

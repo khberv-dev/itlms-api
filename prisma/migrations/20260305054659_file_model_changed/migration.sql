@@ -9,7 +9,8 @@
 */
 -- AlterTable
 ALTER TABLE "file" DROP COLUMN "mime_type",
-DROP COLUMN "original_name",
+DROP
+COLUMN "original_name",
 ADD COLUMN     "filename" TEXT NOT NULL,
 ADD COLUMN     "is_active" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "mimetype" TEXT NOT NULL;

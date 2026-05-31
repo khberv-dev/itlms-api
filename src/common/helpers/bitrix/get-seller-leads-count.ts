@@ -2,12 +2,7 @@ import axios from 'axios';
 
 const BASE_URL = process.env.BITRIX_WEBHOOK_URL;
 
-async function calculateSellerLeadsCount(
-  date: string | Date,
-  seller_id,
-  start = 0,
-  count = 0
-): Promise<number> {
+async function calculateSellerLeadsCount(date: string | Date, seller_id, start = 0, count = 0): Promise<number> {
   if (!seller_id) return 0;
 
   const start_of_day = new Date(date);
@@ -18,11 +13,11 @@ async function calculateSellerLeadsCount(
 
   const response = await axios.post(`${BASE_URL}crm.lead.list`, {
     filter: {
-      "ASSIGNED_BY_ID": seller_id,
-      ">=DATE_CREATE": start_of_day.toISOString(),
-      "<=DATE_CREATE": end_of_day.toISOString(),
+      ASSIGNED_BY_ID: seller_id,
+      '>=DATE_CREATE': start_of_day.toISOString(),
+      '<=DATE_CREATE': end_of_day.toISOString(),
     },
-    select: ["ID"],
+    select: ['ID'],
     start: start,
   });
 

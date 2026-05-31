@@ -11,13 +11,16 @@ import { KpiTableService } from './services/kpi-table.service';
 import { KpiTableRepository } from './repositories/kpi-table.repository';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [SellerSalaryController, SellerKpiController, KpiTableController],
   providers: [
-    SellerKpiService, SellerDailyKpiRepository,
-    SellerMonthlyKpiRepository, SellerSalaryService,
-    KpiTableService, KpiTableRepository
-],
-  exports:[]
+    SellerKpiService,
+    SellerDailyKpiRepository,
+    SellerMonthlyKpiRepository,
+    SellerSalaryService,
+    KpiTableService,
+    KpiTableRepository,
+  ],
+  exports: [],
 })
 export class SellerSalaryModule {}

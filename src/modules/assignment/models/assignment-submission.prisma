@@ -1,25 +1,23 @@
-
-
 model assignment_submission {
-  id              String    @id @default(uuid())
+  id String @id @default(uuid())
 
-  assignment      assignment @relation(fields: [assignment_id], references: [id])
-  assignment_id   String
+  assignment    assignment @relation(fields: [assignment_id], references: [id])
+  assignment_id String
 
-  student         student    @relation(fields: [student_id], references: [id])
-  student_id      String
+  student    student @relation(fields: [student_id], references: [id])
+  student_id String
 
-  content         String?    // text response
-  file_url        String?    // optional file
+  content  String? // text response
+  file_url String? // optional file
 
-  score           Float?     // 0 - 10
-  percentage      Float?     // 0 - 100
+  score      Float? // 0 - 10
+  percentage Float? // 0 - 100
 
-  comment         String?    // mentor comment
-  created_at      DateTime   @default(now())
-  reviewed_at     DateTime?
+  comment     String? // mentor comment
+  created_at  DateTime  @default(now())
+  reviewed_at DateTime?
 
-  files           file[]
+  files file[]
 
   @@unique([assignment_id, student_id])
 }

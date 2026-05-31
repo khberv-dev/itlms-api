@@ -1,20 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Query,
-  Body,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiProperty,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { GroupSnapshotService } from './group_monthly_snapshot.service';
 
-import { IsInt, Min, Max, IsOptional, IsIn } from 'class-validator';
+import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { GroupSnapshotStatsQueryDto } from './dto/get-stats.dto';
 
 class TriggerSnapshotDto {
@@ -30,7 +18,7 @@ class TriggerSnapshotDto {
 
   @ApiProperty({
     example: 'full',
-    description: 'full = to\'liq oy | h1 = 1-15 | h2 = 16-oxir',
+    description: "full = to'liq oy | h1 = 1-15 | h2 = 16-oxir",
     enum: ['full', 'h1', 'h2'],
     default: 'full',
   })
@@ -42,24 +30,20 @@ class TriggerSnapshotDto {
 @ApiTags('Group Snapshot (Retention / Churn / LTV)')
 @Controller('group-snapshots')
 export class GroupSnapshotController {
-  constructor(private readonly snapshotService: GroupSnapshotService) { }
+  constructor(private readonly snapshotService: GroupSnapshotService) {}
 
   // POST /snapshots/trigger
   @Post('trigger')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Snapshot hisoblashni qo\'lda ishga tushirish (admin)',
+    summary: "Snapshot hisoblashni qo'lda ishga tushirish (admin)",
     description: `
       Berilgan yil/oy/period uchun barcha guruhlar snapshotini hisoblaydi.
       period: full (to'liq oy) | h1 (1-15) | h2 (16-oy oxiri)
     `,
   })
   trigger(@Body() dto: TriggerSnapshotDto) {
-    return this.snapshotService.triggerCalculation(
-      dto.year,
-      dto.month,
-      dto.period ?? 'full',
-    );
+    return this.snapshotService.triggerCalculation(dto.year, dto.month, dto.period ?? 'full');
   }
 
   @Get('stats')

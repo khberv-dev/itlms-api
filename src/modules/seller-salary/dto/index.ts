@@ -1,1 +1,1 @@
-export { default as UpdateSellerDailyKpiDto } from './update-seller-daily-kpi.dto'
+export { default as UpdateSellerDailyKpiDto } from './update-seller-daily-kpi.dto';

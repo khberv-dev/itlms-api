@@ -1,11 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FrozenReason } from '@prisma/client';
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsDateString,
-} from 'class-validator';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateFrozenDto {
   @ApiProperty({ enum: FrozenReason, description: 'Muzlatish sababi' })
@@ -19,7 +14,7 @@ export class CreateFrozenDto {
   @IsDateString()
   end_date: string;
 
-  @ApiPropertyOptional({ description: 'Qo\'shimcha izoh' })
+  @ApiPropertyOptional({ description: "Qo'shimcha izoh" })
   @IsOptional()
   @IsString()
   comment?: string;

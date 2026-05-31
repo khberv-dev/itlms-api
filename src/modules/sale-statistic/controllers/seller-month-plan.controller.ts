@@ -5,7 +5,7 @@ import { SellerMonthPlanService } from '../service/seller-mont-plan.service';
 @ApiTags('Seller-Month-Plan')
 @Controller('seller-month-plan')
 export class SellerMonthPlanController {
-  constructor(private readonly sellerMonthPlanService: SellerMonthPlanService) { }
+  constructor(private readonly sellerMonthPlanService: SellerMonthPlanService) {}
 
   @Get('/:seller_id')
   @ApiOperation({ summary: 'Method: get seller month plan sum' })

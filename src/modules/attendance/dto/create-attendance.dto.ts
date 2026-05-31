@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID, IsBoolean, IsDateString, IsArray } from 'class-validator';
+import { IsArray, IsBoolean, IsDateString, IsUUID } from 'class-validator';
 
 class AttendanceItemDto {
   @ApiProperty()

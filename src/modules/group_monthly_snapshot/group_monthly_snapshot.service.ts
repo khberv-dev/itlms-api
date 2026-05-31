@@ -1,19 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
 import { GroupSnapshotRepository } from './group_monthly_snapshot.repository';
-import {
-  SnapshotRangeQueryDto,
-  GroupSnapshotQueryDto,
-  MentorSnapshotQueryDto,
-} from './dto/group_montly_snapshot.dto';
-import {
-  PeriodType,
-  getPeriodRange,
-  getMonthPeriodStatus,
-  getMonthsInRange,
-  isPeriodCompleted,
-} from '../../common/helpers/date/period'
+import { getMonthsInRange, getPeriodRange, isPeriodCompleted, PeriodType } from '../../common/helpers/date/period';
 import { GroupSnapshotStatsQueryDto } from './dto/get-stats.dto';
 
 export interface PeriodStats {
@@ -46,7 +35,7 @@ export interface MonthSnapshot {
 
 @Injectable()
 export class GroupSnapshotService {
-  constructor(private readonly snapshotRepo: GroupSnapshotRepository) { }
+  constructor(private readonly snapshotRepo: GroupSnapshotRepository) {}
 
   // =============================================
   // CRON JOBS
@@ -55,31 +44,22 @@ export class GroupSnapshotService {
   @Cron('0 2 16 * *')
   async calculateFirstHalf() {
     const now = new Date();
-    await this.calculateAndSaveMonthSnapshot(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      'h1',
-    );
+    await this.calculateAndSaveMonthSnapshot(now.getFullYear(), now.getMonth() + 1, 'h1');
   }
 
   @Cron('0 2 1 * *')
   async calculateFullAndSecondHalf() {
     const now = new Date();
     const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth();
-    const prevYear =
-      now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
 
     await this.calculateAndSaveMonthSnapshot(prevYear, prevMonth, 'h2');
     await this.calculateAndSaveMonthSnapshot(prevYear, prevMonth, 'full');
   }
 
-  async triggerCalculation(
-    year: number,
-    month: number,
-    period: PeriodType = 'full',
-  ) {
+  async triggerCalculation(year: number, month: number, period: PeriodType = 'full') {
     if (month < 1 || month > 12) {
-      throw new BadRequestException('Month 1-12 orasida bo\'lishi kerak');
+      throw new BadRequestException("Month 1-12 orasida bo'lishi kerak");
     }
     return this.calculateAndSaveMonthSnapshot(year, month, period);
   }
@@ -89,11 +69,7 @@ export class GroupSnapshotService {
   // Muhim: mentor_id ni o'SHA OY boshidagi holatdan olish
   // =============================================
 
-  private async calculateAndSaveMonthSnapshot(
-    year: number,
-    month: number,
-    period: PeriodType,
-  ) {
+  private async calculateAndSaveMonthSnapshot(year: number, month: number, period: PeriodType) {
     const { start, end } = getPeriodRange(year, month, period);
     const groups = await this.snapshotRepo.getAllActiveGroups();
 
@@ -103,7 +79,7 @@ export class GroupSnapshotService {
 
         return this.snapshotRepo.upsertSnapshotPeriod({
           group_id: group.id,
-          mentor_id: group.mentor_id,       // tarixiy to'g'ri
+          mentor_id: group.mentor_id, // tarixiy to'g'ri
           assistant_id: group.assistant_id,
           year,
           month,
@@ -127,11 +103,7 @@ export class GroupSnapshotService {
   // RAW STATS HISOBLASH
   // =============================================
 
-  private async computeGroupStats(
-    group_id: string,
-    start: Date,
-    end: Date,
-  ): Promise<Omit<PeriodStats, 'is_realtime'>> {
+  private async computeGroupStats(group_id: string, start: Date, end: Date): Promise<Omit<PeriodStats, 'is_realtime'>> {
     const [
       active_count_start,
       active_count_end,
@@ -154,13 +126,11 @@ export class GroupSnapshotService {
       this.snapshotRepo.getExpiredCount(group_id, start, end), // Qo'shimcha churn tipi
     ]);
 
-    const churned_count =
-      dropped_count + churn_frozen_count + transferred_out_count + expired_count;
+    const churned_count = dropped_count + churn_frozen_count + transferred_out_count + expired_count;
     const company_churned_count = dropped_count + churn_frozen_count + expired_count;
     const mentor_churned_count = dropped_count + churn_frozen_count + transferred_by_mentor_issue;
 
-    const rate = (val: number, base: number) =>
-      base > 0 ? Math.round((val / base) * 10000) / 100 : 0;
+    const rate = (val: number, base: number) => (base > 0 ? Math.round((val / base) * 10000) / 100 : 0);
 
     return {
       active_count_start,
@@ -176,45 +146,30 @@ export class GroupSnapshotService {
       company_churn_rate: rate(company_churned_count, active_count_start),
       mentor_churn_rate: rate(mentor_churned_count, active_count_start),
       ltv: this.calculateLtv(ltv).ltv,
-      expired_count
+      expired_count,
     };
   }
 
-
-  private async computeMulti(
-    group_ids: string[],
-    year: number,
-    month: number,
-    type: 'mentor' | 'company',
-  ) {
+  private async computeMulti(group_ids: string[], year: number, month: number, type: 'mentor' | 'company') {
     const { start } = getPeriodRange(year, month, 'full');
     const now = new Date();
 
-    const stats = await Promise.all(
-      group_ids.map((id) => this.computeGroupStats(id, start, now)),
-    );
+    const stats = await Promise.all(group_ids.map((id) => this.computeGroupStats(id, start, now)));
 
-    const avg = (arr: number[]) =>
-      arr.reduce((a, b) => a + b, 0) / arr.length;
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
     const churn =
-      type === 'mentor'
-        ? avg(stats.map((s) => s.mentor_churn_rate))
-        : avg(stats.map((s) => s.company_churn_rate));
+      type === 'mentor' ? avg(stats.map((s) => s.mentor_churn_rate)) : avg(stats.map((s) => s.company_churn_rate));
 
     return this.format(churn, avg(stats.map((s) => s.ltv)), true);
   }
 
-
   async getStats(query: GroupSnapshotStatsQueryDto) {
-    const { startYear, startMonth, endYear, endMonth } =
-      this.parseDateRange(query.start_date, query.end_date);
+    const { startYear, startMonth, endYear, endMonth } = this.parseDateRange(query.start_date, query.end_date);
 
     const months = getMonthsInRange(startYear, startMonth, endYear, endMonth);
 
-    const results = await Promise.all(
-      months.map((m) => this.resolveMonth(m.year, m.month, query)),
-    );
+    const results = await Promise.all(months.map((m) => this.resolveMonth(m.year, m.month, query)));
 
     return this.buildResponse(results.filter(Boolean) as any[], query);
   }
@@ -235,11 +190,8 @@ export class GroupSnapshotService {
         : this.getMentorRealtime(query.mentor_id, year, month);
     }
 
-    return isCompleted
-      ? this.getCompanySnapshot(year, month)
-      : this.getCompanyRealtime(year, month);
+    return isCompleted ? this.getCompanySnapshot(year, month) : this.getCompanyRealtime(year, month);
   }
-
 
   private async getGroupSnapshot(group_id: string, year: number, month: number) {
     const snaps = await this.snapshotRepo.getSnapshotsForGroup(group_id, [{ year, month }]);
@@ -293,8 +245,7 @@ export class GroupSnapshotService {
   }
 
   async getCompanyTrend(query: { start_date: string; end_date: string }) {
-    const { startYear, startMonth, endYear, endMonth } =
-      this.parseDateRange(query.start_date, query.end_date);
+    const { startYear, startMonth, endYear, endMonth } = this.parseDateRange(query.start_date, query.end_date);
 
     const months = getMonthsInRange(startYear, startMonth, endYear, endMonth);
     const now = new Date();
@@ -304,9 +255,17 @@ export class GroupSnapshotService {
         const isCompleted = isPeriodCompleted(year, month, 'full', now);
 
         if (isCompleted) {
-          return { ...(await this.getCompanyMonthFromSnapshot(year, month)), month, year };
+          return {
+            ...(await this.getCompanyMonthFromSnapshot(year, month)),
+            month,
+            year,
+          };
         } else {
-          return { ...(await this.getCompanyRealtime(year, month)), month, year };
+          return {
+            ...(await this.getCompanyRealtime(year, month)),
+            month,
+            year,
+          };
         }
       }),
     );
@@ -321,8 +280,7 @@ export class GroupSnapshotService {
 
     if (!snaps.length) return null;
 
-    const avg = (arr: number[]) =>
-      arr.reduce((a, b) => a + b, 0) / arr.length;
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
     const churn = avg(snaps.map((s) => s.company_churn_rate ?? 0));
 
@@ -334,10 +292,7 @@ export class GroupSnapshotService {
     };
   }
 
-  async getMentorsStats(query: {
-    start_date: string;
-    end_date: string;
-  }) {
+  async getMentorsStats(query: { start_date: string; end_date: string }) {
     const mentors = await this.snapshotRepo.getAllMentors();
 
     const results = await Promise.all(
@@ -355,7 +310,7 @@ export class GroupSnapshotService {
           churn_rate: stats.churn_rate,
           ltv: stats.ltv,
           has_realtime: stats.has_realtime,
-          student_count:0
+          student_count: 0,
         };
       }),
     );
@@ -425,8 +380,7 @@ export class GroupSnapshotService {
   }
 
   private avgFormat(churns: number[], ltvs: number[], is_realtime: boolean) {
-    const avg = (arr: number[]) =>
-      arr.reduce((a, b) => a + b, 0) / arr.length;
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
     return this.format(avg(churns), avg(ltvs), is_realtime);
   }
@@ -445,8 +399,7 @@ export class GroupSnapshotService {
       };
     }
 
-    const avg = (arr: number[]) =>
-      arr.reduce((a, b) => a + b, 0) / arr.length;
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
     return {
       churn_rate: this.round(avg(months.map((m) => m.churn_rate))),

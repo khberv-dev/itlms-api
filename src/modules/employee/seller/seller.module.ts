@@ -6,9 +6,9 @@ import { UserModule } from 'src/modules/user/user.module';
 import { SellerController } from './seller.controller';
 
 @Module({
-  imports:[PrismaModule, UserModule],
+  imports: [PrismaModule, UserModule],
   controllers: [SellerController],
-  providers: [SellerService,SellerRepository],
-  exports:[SellerService]
+  providers: [SellerService, SellerRepository],
+  exports: [SellerService],
 })
 export class SellerModule {}

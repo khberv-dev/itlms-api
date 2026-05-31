@@ -4,23 +4,22 @@ enum SellerLevel {
   senior
 }
 
-
 model seller {
-  id                     String                  @id @default(uuid())
-  amocrm_id              String?
-  sip                    Int?
-  level                  SellerLevel             @default(junior)
-  today_work_start_time  DateTime? 
-  work_start_time        String?
-  work_end_time          String?
+  id                    String      @id @default(uuid())
+  amocrm_id             String?
+  sip                   Int?
+  level                 SellerLevel @default(junior)
+  today_work_start_time DateTime?
+  work_start_time       String?
+  work_end_time         String?
 
-  user                   user                    @relation(fields: [user_id], references: [id])
-  user_id                String                  @unique
-  
-  sales                  sale[]
-  students               student[]
-  month_plans            seller_month_plan[]
-  daily_statistics       seller_daily_statistic[]
-  seller_daily_kpi       seller_daily_kpi[]
-  seller_monthly_kpi     seller_monthly_kpi[]
+  user    user   @relation(fields: [user_id], references: [id])
+  user_id String @unique
+
+  sales              sale[]
+  students           student[]
+  month_plans        seller_month_plan[]
+  daily_statistics   seller_daily_statistic[]
+  seller_daily_kpi   seller_daily_kpi[]
+  seller_monthly_kpi seller_monthly_kpi[]
 }

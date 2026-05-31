@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 async function calculateSellerLeadsCount(date, seller_id, page = 1, count = 0) {
-
-  if(!seller_id) return 0;
+  if (!seller_id) return 0;
 
   const start_of_day = new Date(date);
   start_of_day.setHours(0, 0, 0, 0);
@@ -22,12 +21,7 @@ async function calculateSellerLeadsCount(date, seller_id, page = 1, count = 0) {
 
   if (response.status === 200) {
     const leads = response.data._embedded.leads;
-    return await calculateSellerLeadsCount(
-      date,
-      seller_id,
-      page + 1,
-      count + leads.length,
-    );
+    return await calculateSellerLeadsCount(date, seller_id, page + 1, count + leads.length);
   } else return count;
 }
 

@@ -1,2 +1,3 @@
 -- AlterTable
-ALTER TABLE "sale" ADD COLUMN     "comment" TEXT;
+ALTER TABLE "sale"
+    ADD COLUMN "comment" TEXT;

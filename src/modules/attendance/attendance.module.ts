@@ -5,9 +5,9 @@ import { AttendanceRepository } from './attendance.repository';
 import { AttendanceController } from './attendance.controller';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [AttendanceController],
-  providers: [AttendanceService,AttendanceRepository],
-  exports:[AttendanceService]
+  providers: [AttendanceService, AttendanceRepository],
+  exports: [AttendanceService],
 })
 export class AttendanceModule {}

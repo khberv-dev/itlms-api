@@ -1,72 +1,67 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../_prisma/prisma.service";
-import { Prisma } from "@prisma/client";
-
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../_prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AssignmentRepository {
+  constructor(private prisma: PrismaService) {}
 
-    constructor(private prisma: PrismaService) { }
+  create(data: Prisma.assignmentCreateInput) {
+    return this.prisma.assignment.create({
+      data,
+    });
+  }
 
-    create(data: Prisma.assignmentCreateInput) {
-        return this.prisma.assignment.create({
-            data,
-        });
-    }
-
-    async getStudentAssignments(studentId: string) {
-        return this.prisma.assignment.findMany({
-            where: {
-                group: {
-                    students: {
-                        some: { id: studentId },
-                    },
-                },
+  async getStudentAssignments(studentId: string) {
+    return this.prisma.assignment.findMany({
+      where: {
+        group: {
+          students: {
+            some: { id: studentId },
+          },
+        },
+      },
+      include: {
+        submissions: {
+          where: { student_id: studentId },
+          include: {
+            files: {
+              select: {
+                id: true,
+                url: true,
+              },
             },
-            include: {
-                submissions: {
-                    where: { student_id: studentId },
-                    include: {
-                        files: {
-                            select: {
-                                id: true,
-                                url: true,
-                            }
-                        }
-                    }
-                },
-                files: {
-                    select: {
-                        id: true,
-                        url: true,
-                    }
-                }
-            },
-            orderBy: { due_date: 'desc' },
-        });
+          },
+        },
+        files: {
+          select: {
+            id: true,
+            url: true,
+          },
+        },
+      },
+      orderBy: { due_date: 'desc' },
+    });
+  }
+
+  async getMentorAssignments(mentor_id: string, group_id: string) {
+    const where = [Prisma.sql`a.mentor_id = ${mentor_id}`];
+
+    if (group_id) {
+      where.push(Prisma.sql`a.group_id = ${group_id}`);
     }
-
-    async getMentorAssignments(mentor_id: string, group_id: string) {
-
-        const where = [
-            Prisma.sql`a.mentor_id = ${mentor_id}`
-        ];
-
-        if (group_id) {
-            where.push(Prisma.sql`a.group_id = ${group_id}`);
-        }
-        return this.prisma.$queryRaw<
-            {
-                id: string;
-                title: string;
-                group_name: string;
-                due_date: Date;
-                submissions_count: number;
-                students_count: number;
-                waiting_for_review: number;
-                status: string;
-            }[]
-        >`
+    return this.prisma.$queryRaw<
+      {
+        id: string;
+        title: string;
+        group_name: string;
+        due_date: Date;
+        submissions_count: number;
+        students_count: number;
+        waiting_for_review: number;
+        status: string;
+      }[]
+    >`
            SELECT
              a.id,
              a.title,
@@ -96,20 +91,20 @@ export class AssignmentRepository {
            GROUP BY a.id, g.name
            ORDER BY a.created_at DESC
        `;
-    }
+  }
 
-    async getGroupGrades(group_id: string) {
-        return this.prisma.$queryRaw<
-            {
-                id: string;
-                name: string;
-                avatar_url: string;
-                last_assignment_score: number;
-                attendance_score: number;
-                average_assignment: number;
-                rank: number;
-            }[]
-        >`
+  async getGroupGrades(group_id: string) {
+    return this.prisma.$queryRaw<
+      {
+        id: string;
+        name: string;
+        avatar_url: string;
+        last_assignment_score: number;
+        attendance_score: number;
+        average_assignment: number;
+        rank: number;
+      }[]
+    >`
         WITH last_assignment AS (
           SELECT id
           FROM assignment
@@ -167,48 +162,46 @@ export class AssignmentRepository {
         FROM student_stats
         ORDER BY average_assignment DESC;
     `;
-    }
+  }
 
-
-    findAssignmentById(id: string) {
-        return this.prisma.assignment.findUnique({
-            where: { id },
-            include: {
-                submissions: {
-                    include: {
-                        student: {
-                            include: {
-                                user: true,
-                            },
-                        },
-                        files: {
-                            select: {
-                                id: true,
-                                url: true
-                            }
-                        }
-                    },
-                },
+  findAssignmentById(id: string) {
+    return this.prisma.assignment.findUnique({
+      where: { id },
+      include: {
+        submissions: {
+          include: {
+            student: {
+              include: {
+                user: true,
+              },
             },
-        });
-    }
-
-    createSubmission(data) {
-        return this.prisma.assignment_submission.create({
-            data,
-        });
-    }
-
-    gradeSubmission(id: string, score: number, percentage: number, comment: string) {
-        return this.prisma.assignment_submission.update({
-            where: { id },
-            data: {
-                score,
-                percentage,
-                reviewed_at: new Date(),
-                comment
+            files: {
+              select: {
+                id: true,
+                url: true,
+              },
             },
-        });
-    }
+          },
+        },
+      },
+    });
+  }
 
+  createSubmission(data) {
+    return this.prisma.assignment_submission.create({
+      data,
+    });
+  }
+
+  gradeSubmission(id: string, score: number, percentage: number, comment: string) {
+    return this.prisma.assignment_submission.update({
+      where: { id },
+      data: {
+        score,
+        percentage,
+        reviewed_at: new Date(),
+        comment,
+      },
+    });
+  }
 }

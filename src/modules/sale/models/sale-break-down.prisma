@@ -1,19 +1,18 @@
-
 model sale_break_down {
-  id           String   @id @default(uuid())
-  
-  sale         sale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
-  sale_id      String
-  
-  student      student  @relation(fields: [student_id], references: [id])
-  student_id   String
+  id String @id @default(uuid())
 
-  month        Int      
-  year         Int      
-  days_count   Int      
-  amount       Decimal  @db.Decimal(18, 2)
+  sale    sale   @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+  sale_id String
 
-  created_at   DateTime @default(now())
+  student    student @relation(fields: [student_id], references: [id])
+  student_id String
+
+  month      Int
+  year       Int
+  days_count Int
+  amount     Decimal @db.Decimal(18, 2)
+
+  created_at DateTime @default(now())
 
   @@index([year, month])
 }

@@ -5,10 +5,12 @@
 
 */
 -- AlterTable
-ALTER TABLE "user" ADD COLUMN     "avatar_id" TEXT;
+ALTER TABLE "user"
+    ADD COLUMN "avatar_id" TEXT;
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_avatar_id_key" ON "user"("avatar_id");
+CREATE UNIQUE INDEX "user_avatar_id_key" ON "user" ("avatar_id");
 
 -- AddForeignKey
-ALTER TABLE "user" ADD CONSTRAINT "user_avatar_id_fkey" FOREIGN KEY ("avatar_id") REFERENCES "file"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user"
+    ADD CONSTRAINT "user_avatar_id_fkey" FOREIGN KEY ("avatar_id") REFERENCES "file" ("id") ON DELETE SET NULL ON UPDATE CASCADE;

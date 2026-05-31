@@ -7,9 +7,9 @@ import { StudentController } from './student.controller';
 import { StudentStatusModule } from '../student-status/student-status.module';
 
 @Module({
-  imports:[PrismaModule, UserModule, StudentStatusModule],
+  imports: [PrismaModule, UserModule, StudentStatusModule],
   controllers: [StudentController],
-  providers: [StudentService,StudentRepository],
-  exports:[StudentService]
+  providers: [StudentService, StudentRepository],
+  exports: [StudentService],
 })
 export class StudentModule {}

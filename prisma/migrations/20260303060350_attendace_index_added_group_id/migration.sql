@@ -8,4 +8,4 @@
 DROP INDEX "attendance_student_id_date_key";
 
 -- CreateIndex
-CREATE UNIQUE INDEX "attendance_student_id_group_id_date_key" ON "attendance"("student_id", "group_id", "date");
+CREATE UNIQUE INDEX "attendance_student_id_group_id_date_key" ON "attendance" ("student_id", "group_id", "date");

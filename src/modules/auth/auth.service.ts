@@ -10,7 +10,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtTokenService: JwtTokenService,
-  ) { }
+  ) {}
 
   async validateUserByLoginPassword(phone: string, password: string) {
     const user = await this.userService.findByPhone(phone);
@@ -19,10 +19,7 @@ export class AuthService {
       throw new BadRequestException('Invalid phone.');
     }
 
-    const is_password_same = await this.comparePasswordWithHash(
-      password,
-      user?.password,
-    );
+    const is_password_same = await this.comparePasswordWithHash(password, user?.password);
 
     if (!is_password_same) {
       throw new BadRequestException('Invalid password');
@@ -33,7 +30,7 @@ export class AuthService {
     return user;
   }
 
-  async validateUserById(user_id: string, role:string) {
+  async validateUserById(user_id: string, role: string) {
     const user = await this.userService.getMe(user_id, role).catch(() => {
       throw new BadRequestException('Valid token with non-existent user.');
     });
@@ -46,7 +43,7 @@ export class AuthService {
     return is_same;
   }
 
-  getJWT(type: 'access' | 'refresh', sub: string,role) {
-    return this.jwtTokenService.getJWT(type, sub,role);
+  getJWT(type: 'access' | 'refresh', sub: string, role) {
+    return this.jwtTokenService.getJWT(type, sub, role);
   }
 }

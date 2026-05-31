@@ -1,1 +1,1 @@
-export {default as CreateResaleDto} from './create-resale.dto'
+export { default as CreateResaleDto } from './create-resale.dto';

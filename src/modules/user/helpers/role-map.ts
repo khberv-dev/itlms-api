@@ -7,11 +7,7 @@ enum Role {
   admin = 'admin',
 }
 
-type ReturnedRole =
-  | 'student'
-  | 'administration'
-  | 'seller'
-  | 'mentor';
+type ReturnedRole = 'student' | 'administration' | 'seller' | 'mentor';
 
 const roleMap: Record<Role, ReturnedRole> = {
   [Role.student]: 'student',

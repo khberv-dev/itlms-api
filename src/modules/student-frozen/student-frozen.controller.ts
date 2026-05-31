@@ -1,28 +1,19 @@
 import {
-  Controller,
-  Post,
-  Patch,
-  Get,
-  Param,
   Body,
-  Query,
-  ParseUUIDPipe,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
   Request,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StudentFrozenService } from './student-frozen.service';
-import {
-  CreateFrozenDto,
-  FrozenListQueryDto,
-} from './dto/student-frozen.dto';
+import { CreateFrozenDto, FrozenListQueryDto } from './dto/student-frozen.dto';
 
 @ApiTags('Student Frozen')
 @Controller()
@@ -43,7 +34,10 @@ export class StudentFrozenController {
   })
   @ApiParam({ name: 'student_id', description: 'Student UUID' })
   @ApiResponse({ status: 201, description: 'Muvaffaqiyatli muzlatildi' })
-  @ApiResponse({ status: 400, description: 'Student active emas yoki allaqachon muzlatilgan' })
+  @ApiResponse({
+    status: 400,
+    description: 'Student active emas yoki allaqachon muzlatilgan',
+  })
   @ApiResponse({ status: 404, description: 'Student topilmadi' })
   async freeze(
     @Param('student_id', ParseUUIDPipe) student_id: string,
@@ -65,13 +59,13 @@ export class StudentFrozenController {
     `,
   })
   @ApiParam({ name: 'student_id', description: 'Student UUID' })
-  @ApiResponse({ status: 200, description: 'Muzlatish muvaffaqiyatli tugatiland' })
+  @ApiResponse({
+    status: 200,
+    description: 'Muzlatish muvaffaqiyatli tugatiland',
+  })
   @ApiResponse({ status: 400, description: 'Aktiv muzlatish topilmadi' })
   @ApiResponse({ status: 404, description: 'Student topilmadi' })
-  async unfreeze(
-    @Param('student_id', ParseUUIDPipe) student_id: string,
-    @Request() req: any,
-  ) {
+  async unfreeze(@Param('student_id', ParseUUIDPipe) student_id: string, @Request() req: any) {
     return await this.frozenService.unfreeze(student_id, req.user.user_id);
   }
 
@@ -92,12 +86,20 @@ export class StudentFrozenController {
   @Get('frozen')
   @ApiOperation({
     summary: 'Barcha muzlatishlar listini olish (admin)',
-    description: 'Berilgan sana oralig\'ida boshlangan yoki davom etayotgan muzlatishlar',
+    description: "Berilgan sana oralig'ida boshlangan yoki davom etayotgan muzlatishlar",
   })
-  @ApiQuery({ name: 'start_date', example: '2024-03-01', description: 'Boshlanish sanasi' })
-  @ApiQuery({ name: 'end_date', example: '2024-03-31', description: 'Tugash sanasi' })
+  @ApiQuery({
+    name: 'start_date',
+    example: '2024-03-01',
+    description: 'Boshlanish sanasi',
+  })
+  @ApiQuery({
+    name: 'end_date',
+    example: '2024-03-31',
+    description: 'Tugash sanasi',
+  })
   @ApiResponse({ status: 200, description: 'Muzlatishlar listi' })
-  @ApiResponse({ status: 400, description: 'Noto\'g\'ri sana oralig\'i' })
+  @ApiResponse({ status: 400, description: "Noto'g'ri sana oralig'i" })
   async getAllFrozen(@Query() query: FrozenListQueryDto) {
     return await this.frozenService.getAllFrozenByDateRange(query);
   }

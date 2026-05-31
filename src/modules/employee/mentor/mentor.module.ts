@@ -6,9 +6,9 @@ import { UserModule } from 'src/modules/user/user.module';
 import { MentorController } from './mentor.controller';
 
 @Module({
-  imports:[PrismaModule, UserModule],
+  imports: [PrismaModule, UserModule],
   controllers: [MentorController],
-  providers: [MentorService,MentorRepository],
-  exports:[MentorService]
+  providers: [MentorService, MentorRepository],
+  exports: [MentorService],
 })
 export class MentorModule {}

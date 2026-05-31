@@ -6,10 +6,12 @@
 
 */
 -- AlterTable
-ALTER TABLE "sale" ADD COLUMN     "student_id" TEXT NOT NULL;
+ALTER TABLE "sale"
+    ADD COLUMN "student_id" TEXT NOT NULL;
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sale_student_id_key" ON "sale"("student_id");
+CREATE UNIQUE INDEX "sale_student_id_key" ON "sale" ("student_id");
 
 -- AddForeignKey
-ALTER TABLE "sale" ADD CONSTRAINT "sale_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "sale"
+    ADD CONSTRAINT "sale_student_id_fkey" FOREIGN KEY ("student_id") REFERENCES "student" ("id") ON DELETE RESTRICT ON UPDATE CASCADE;

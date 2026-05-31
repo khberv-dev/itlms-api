@@ -8,11 +8,10 @@ async function getBitrixUsers() {
 
     const users = response.data.result;
 
-    return users.map(u => ({
+    return users.map((u) => ({
       id: u.ID,
       name: `${u.NAME} ${u.LAST_NAME}`,
     }));
-
   } catch (error) {
     console.error('Bitrix Users Error:', error.response?.data || error.message);
   }

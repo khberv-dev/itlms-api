@@ -1,16 +1,14 @@
-
-
 model online_lesson {
-  id                String        @id @default(uuid())
-  vroom_lesson_id   String        @unique
-  started_at        DateTime      @default(now())  
-  ended_at          DateTime?     
-  status            String        @default("live")
+  id              String    @id @default(uuid())
+  vroom_lesson_id String    @unique
+  started_at      DateTime  @default(now())
+  ended_at        DateTime?
+  status          String    @default("live")
 
-  group             group         @relation(fields: [group_id], references: [id])
-  group_id          String 
+  group    group  @relation(fields: [group_id], references: [id])
+  group_id String
 
-  mentor            mentor         @relation(fields: [teacher_id], references: [id])
-  teacher_id        String       
-  attendances       lesson_attendance[]
+  mentor      mentor              @relation(fields: [teacher_id], references: [id])
+  teacher_id  String
+  attendances lesson_attendance[]
 }

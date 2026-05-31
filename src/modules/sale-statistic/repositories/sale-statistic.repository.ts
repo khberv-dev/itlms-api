@@ -4,158 +4,156 @@ import { getYearAndMonth } from 'src/common/helpers/date';
 
 @Injectable()
 export class SaleStatisticRepository {
-    constructor(
-        private readonly prismaService: PrismaService,
-    ) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
-    async calculateDailySaleSum(date: Date) {
-        const today_sales = await this.prismaService.sale.aggregate({
-            _sum: {
-                sum: true,
-            },
-            where: {
-                created_at: {
-                    gte: date,
-                },
-            },
-        });
-        const today_sum = today_sales?._sum?.sum || 0
-        return +today_sum;
-    }
+  async calculateDailySaleSum(date: Date) {
+    const today_sales = await this.prismaService.sale.aggregate({
+      _sum: {
+        sum: true,
+      },
+      where: {
+        created_at: {
+          gte: date,
+        },
+      },
+    });
+    const today_sum = today_sales?._sum?.sum || 0;
+    return +today_sum;
+  }
 
-    async calculateMonthlySaleSum(start_of_month: Date, end_of_month: Date) {
-        const month_sales = await this.prismaService.sale.aggregate({
-            _sum: {
-                sum: true,
-            },
-            where: {
-                created_at: {
-                    gte: start_of_month,
-                    lte: end_of_month,
-                },
-            },
-        });
-        const month_sum = month_sales?._sum?.sum || 0;
-        return +month_sum;
-    }
+  async calculateMonthlySaleSum(start_of_month: Date, end_of_month: Date) {
+    const month_sales = await this.prismaService.sale.aggregate({
+      _sum: {
+        sum: true,
+      },
+      where: {
+        created_at: {
+          gte: start_of_month,
+          lte: end_of_month,
+        },
+      },
+    });
+    const month_sum = month_sales?._sum?.sum || 0;
+    return +month_sum;
+  }
 
-    async getMonthlyPlanSum(date: Date) {
-        const { year, month } = getYearAndMonth(date);
+  async getMonthlyPlanSum(date: Date) {
+    const { year, month } = getYearAndMonth(date);
 
-        const result = await this.prismaService.seller_month_plan.aggregate({
-            where: {
-                year,
-                month,
-            },
-            _sum: {
-                plan: true,
-            },
-        });
+    const result = await this.prismaService.seller_month_plan.aggregate({
+      where: {
+        year,
+        month,
+      },
+      _sum: {
+        plan: true,
+      },
+    });
 
-        return +(result._sum.plan || 0);
-    }
+    return +(result._sum.plan || 0);
+  }
 
-    async getAllSellers() {
-        return await this.prismaService.seller.findMany({
-            include: {
-                user: true,
-            },
-            where: {
-                user: {
-                    role: 'seller'
-                }
-            }
-        });
-    }
+  async getAllSellers() {
+    return await this.prismaService.seller.findMany({
+      include: {
+        user: true,
+      },
+      where: {
+        user: {
+          role: 'seller',
+        },
+      },
+    });
+  }
 
-    async getSellerMonthlySaleSum(seller_id: string, from: Date, to: Date) {
-        const sales = await this.prismaService.sale.aggregate({
-            where: {
-                seller_id: seller_id,
-                date: {
-                    gte: from,
-                    lte: to,
-                },
-            },
-            _sum: {
-                sum: true,
-            },
-            _count: true,
-        });
-        const sum = sales?._sum?.sum || 0;
-        const count = sales?._count || 0;
-        return { sale_sum: +sum, sale_count: count };
-    }
+  async getSellerMonthlySaleSum(seller_id: string, from: Date, to: Date) {
+    const sales = await this.prismaService.sale.aggregate({
+      where: {
+        seller_id: seller_id,
+        date: {
+          gte: from,
+          lte: to,
+        },
+      },
+      _sum: {
+        sum: true,
+      },
+      _count: true,
+    });
+    const sum = sales?._sum?.sum || 0;
+    const count = sales?._count || 0;
+    return { sale_sum: +sum, sale_count: count };
+  }
 
-    async getSellerMonthPlan(seller_id: string, date: Date) {
-        const { year, month } = getYearAndMonth(date)
+  async getSellerMonthPlan(seller_id: string, date: Date) {
+    const { year, month } = getYearAndMonth(date);
 
-        const month_plan = await this.prismaService.seller_month_plan.findFirst({
-            where: {
-                seller_id,
-                year,
-                month,
-            },
-        });
+    const month_plan = await this.prismaService.seller_month_plan.findFirst({
+      where: {
+        seller_id,
+        year,
+        month,
+      },
+    });
 
-        const plan = month_plan?.plan || 0;
-        return +plan;
-    }
+    const plan = month_plan?.plan || 0;
+    return +plan;
+  }
 
-    async getSellerLeadsCount(seller_id: string, from: Date, to: Date) {
-        const leads = await this.prismaService.seller_daily_statistic.aggregate({
-            where: {
-                seller_id: seller_id,
-                date: {
-                    gte: from,
-                    lte: to,
-                },
-            },
-            _sum: {
-                leads_count: true,
-            },
-        });
-        const leads_count = leads?._sum?.leads_count || 0;
-        return +leads_count;
-    }
+  async getSellerLeadsCount(seller_id: string, from: Date, to: Date) {
+    const leads = await this.prismaService.seller_daily_statistic.aggregate({
+      where: {
+        seller_id: seller_id,
+        date: {
+          gte: from,
+          lte: to,
+        },
+      },
+      _sum: {
+        leads_count: true,
+      },
+    });
+    const leads_count = leads?._sum?.leads_count || 0;
+    return +leads_count;
+  }
 
-    async getDailySales(from: Date, to: Date) {
-        return await this.prismaService.sale.groupBy({
-            by: ['date'],
-            where: {
-                date: {
-                    gte: from,
-                    lte: to,
-                },
-            },
-            _sum: {
-                sum: true,
-            },
-        });
-    }
+  async getDailySales(from: Date, to: Date) {
+    return await this.prismaService.sale.groupBy({
+      by: ['date'],
+      where: {
+        date: {
+          gte: from,
+          lte: to,
+        },
+      },
+      _sum: {
+        sum: true,
+      },
+    });
+  }
 
-    async getYearPlan(year: number) {
-        const rows = await this.prismaService.seller_month_plan.groupBy({
-            by: ['year', 'month'],
-            where: { year },
-            _sum: {
-                plan: true,
-                sale: true,
-            },
-            orderBy: { month: 'asc' },
-        });
+  async getYearPlan(year: number) {
+    const rows = await this.prismaService.seller_month_plan.groupBy({
+      by: ['year', 'month'],
+      where: { year },
+      _sum: {
+        plan: true,
+        sale: true,
+      },
+      orderBy: { month: 'asc' },
+    });
 
-        return rows.map(row => ({
-            id: `${row.year}-${row.month}`,
-            year: row.year,
-            month: row.month,
-            plan: row._sum.plan ?? 0,
-            sale: row._sum.sale ?? 0,
-        }));
-    }
+    return rows.map((row) => ({
+      id: `${row.year}-${row.month}`,
+      year: row.year,
+      month: row.month,
+      plan: row._sum.plan ?? 0,
+      sale: row._sum.sale ?? 0,
+    }));
+  }
 
-    async getYearlySales(year: number) {
-        return this.prismaService.$queryRaw`
+  async getYearlySales(year: number) {
+    return this.prismaService.$queryRaw`
              SELECT 
                EXTRACT(MONTH FROM month_start)::INT as month,
                SUM(sum) as total
@@ -170,12 +168,10 @@ export class SaleStatisticRepository {
              GROUP BY month_start
              ORDER BY month_start ASC;
             `;
-    }
+  }
 
-    async getMonthlyConversion(start_date: Date, end_date: Date) {
-        const result = await this.prismaService.$queryRaw<
-            { month: number; conversion: number }[]
-        >`
+  async getMonthlyConversion(start_date: Date, end_date: Date) {
+    const result = await this.prismaService.$queryRaw<{ month: number; conversion: number }[]>`
                 WITH leads AS (
                   SELECT 
                     DATE_TRUNC('month', date) AS month_date,
@@ -208,13 +204,11 @@ export class SaleStatisticRepository {
                 ORDER BY month;
             `;
 
-        return result;
-    }
+    return result;
+  }
 
-    async getSalesByAddress(start_date: Date, end_date: Date) {
-        return this.prismaService.$queryRaw<
-            { address: string; count: number; total_sum: string }[]
-        >`
+  async getSalesByAddress(start_date: Date, end_date: Date) {
+    return this.prismaService.$queryRaw<{ address: string; count: number; total_sum: string }[]>`
             SELECT 
               s.address,
               COUNT(sa.id)::int AS count,
@@ -225,12 +219,10 @@ export class SaleStatisticRepository {
             GROUP BY s.address
             ORDER BY count DESC;
        `;
-    }
+  }
 
-    async getSalesByJob(start_date: Date, end_date: Date) {
-        return this.prismaService.$queryRaw<
-            { job: string; count: number }[]
-        >`
+  async getSalesByJob(start_date: Date, end_date: Date) {
+    return this.prismaService.$queryRaw<{ job: string; count: number }[]>`
             SELECT 
               s.job,
               COUNT(sa.id)::int AS count
@@ -240,19 +232,19 @@ export class SaleStatisticRepository {
             GROUP BY s.job
             ORDER BY count DESC;
         `;
-    }
+  }
 
-    async getSellersByAverageCheck(start_date: Date, end_date: Date) {
-        return this.prismaService.$queryRaw<
-            {
-                seller_id: string;
-                first_name: string;
-                last_name: string;
-                average_check_sum: number;
-                overall_average: number;
-                is_above_average: boolean;
-            }[]
-        >`
+  async getSellersByAverageCheck(start_date: Date, end_date: Date) {
+    return this.prismaService.$queryRaw<
+      {
+        seller_id: string;
+        first_name: string;
+        last_name: string;
+        average_check_sum: number;
+        overall_average: number;
+        is_above_average: boolean;
+      }[]
+    >`
         WITH seller_stats AS (
             SELECT 
                 sel.id AS seller_id,
@@ -280,42 +272,42 @@ export class SaleStatisticRepository {
         FROM seller_stats ss, overall o
         ORDER BY ss.avg_sum DESC;
     `;
-    }
+  }
 
-    async getTopPerformersData(start_date: Date, end_date: Date) {
-        // 1. Har bir seller uchun statistikani bazaning o'zida yig'amiz (Sum)
-        const stats = await this.prismaService.seller_daily_statistic.groupBy({
-            by: ['seller_id'],
-            where: {
-                date: { gte: start_date, lte: end_date },
-            },
-            _sum: {
-                succes_count: true,
-                total_count: true,
-                time: true,
-            },
-        });
+  async getTopPerformersData(start_date: Date, end_date: Date) {
+    // 1. Har bir seller uchun statistikani bazaning o'zida yig'amiz (Sum)
+    const stats = await this.prismaService.seller_daily_statistic.groupBy({
+      by: ['seller_id'],
+      where: {
+        date: { gte: start_date, lte: end_date },
+      },
+      _sum: {
+        succes_count: true,
+        total_count: true,
+        time: true,
+      },
+    });
 
-        // 2. Har bir seller uchun sotuvlar summasini bazada yig'amiz
-        const sales = await this.prismaService.sale.groupBy({
-            by: ['seller_id'],
-            where: {
-                date: { gte: start_date, lte: end_date },
-            },
-            _sum: {
-                sum: true,
-            },
-        });
+    // 2. Har bir seller uchun sotuvlar summasini bazada yig'amiz
+    const sales = await this.prismaService.sale.groupBy({
+      by: ['seller_id'],
+      where: {
+        date: { gte: start_date, lte: end_date },
+      },
+      _sum: {
+        sum: true,
+      },
+    });
 
-        // 3. Sotuvchilarning shaxsiy ma'lumotlarini (ism-sharif) olamiz
-        const sellers = await this.prismaService.seller.findMany({
-            include: {
-                user: {
-                    select: { first_name: true, last_name: true, avatar_url: true }
-                }
-            }
-        });
+    // 3. Sotuvchilarning shaxsiy ma'lumotlarini (ism-sharif) olamiz
+    const sellers = await this.prismaService.seller.findMany({
+      include: {
+        user: {
+          select: { first_name: true, last_name: true, avatar_url: true },
+        },
+      },
+    });
 
-        return { stats, sales, sellers };
-    }
+    return { stats, sales, sellers };
+  }
 }

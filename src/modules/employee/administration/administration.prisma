@@ -1,8 +1,6 @@
-
-
 model administration {
-  id                  String     @id @default(uuid())
+  id String @id @default(uuid())
 
-  user                user       @relation(fields: [user_id], references: [id])
-  user_id             String     @unique
+  user    user   @relation(fields: [user_id], references: [id])
+  user_id String @unique
 }

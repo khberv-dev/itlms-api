@@ -1,19 +1,17 @@
-
-
 model attendance {
-  id                 String           @id @default(uuid())
-  created_at         DateTime         @default(now())
-  date               DateTime         @db.Date
-  is_present         Boolean?         @default(false)
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  date       DateTime @db.Date
+  is_present Boolean? @default(false)
 
-  student            student          @relation(fields: [student_id], references: [id])
-  student_id         String
+  student    student @relation(fields: [student_id], references: [id])
+  student_id String
 
-  group              group            @relation(fields: [group_id], references: [id])
-  group_id           String
+  group    group  @relation(fields: [group_id], references: [id])
+  group_id String
 
-  mentor             mentor           @relation(fields: [mentor_id], references: [id])
-  mentor_id          String
+  mentor    mentor @relation(fields: [mentor_id], references: [id])
+  mentor_id String
 
   @@unique([student_id, group_id, date])
 }

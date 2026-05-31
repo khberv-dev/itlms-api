@@ -5,9 +5,9 @@ import { AssignmentRepository } from './assignment.repository';
 import { AssignmentController } from './assignment.controller';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [AssignmentController],
-  providers: [AssignmentService,AssignmentRepository],
-  exports:[AssignmentService]
+  providers: [AssignmentService, AssignmentRepository],
+  exports: [AssignmentService],
 })
 export class AssignmentModule {}

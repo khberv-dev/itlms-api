@@ -5,4 +5,4 @@
 
 */
 -- CreateIndex
-CREATE UNIQUE INDEX "seller_monthly_kpi_seller_id_year_month_key" ON "seller_monthly_kpi"("seller_id", "year", "month");
+CREATE UNIQUE INDEX "seller_monthly_kpi_seller_id_year_month_key" ON "seller_monthly_kpi" ("seller_id", "year", "month");

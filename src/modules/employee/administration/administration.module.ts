@@ -6,9 +6,9 @@ import { UserModule } from 'src/modules/user/user.module';
 import { AdministrationController } from './administration.controller';
 
 @Module({
-  imports:[PrismaModule, UserModule],
+  imports: [PrismaModule, UserModule],
   controllers: [AdministrationController],
-  providers: [AdministrationService,AdministrationRepository],
-  exports:[AdministrationService]
+  providers: [AdministrationService, AdministrationRepository],
+  exports: [AdministrationService],
 })
 export class AdministrationModule {}

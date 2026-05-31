@@ -13,14 +13,18 @@ import { SellerStatisticRepository } from './repositories/seller-statistic.repos
 import { SellerStatisticController } from './controllers/seller-statistic.controller';
 
 @Module({
-  imports:[PrismaModule],
-  controllers: [SaleStatisticController,SellerMonthPlanController,SellerStatisticController],
+  imports: [PrismaModule],
+  controllers: [SaleStatisticController, SellerMonthPlanController, SellerStatisticController],
   providers: [
-    SaleStatisticService,SaleStatisticRepository,
-    SellerDailyStatisticService, SellerDailyStatisticRepository,
-    SellerMonthPlanService, SellerMonthPlanRepository,
-    SellerStatisticService, SellerStatisticRepository
-],
-exports:[]
+    SaleStatisticService,
+    SaleStatisticRepository,
+    SellerDailyStatisticService,
+    SellerDailyStatisticRepository,
+    SellerMonthPlanService,
+    SellerMonthPlanRepository,
+    SellerStatisticService,
+    SellerStatisticRepository,
+  ],
+  exports: [],
 })
 export class SaleStatisticModule {}

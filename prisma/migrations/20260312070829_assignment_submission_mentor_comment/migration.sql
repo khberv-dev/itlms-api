@@ -1,2 +1,3 @@
 -- AlterTable
-ALTER TABLE "assignment_submission" ADD COLUMN     "comment" TEXT;
+ALTER TABLE "assignment_submission"
+    ADD COLUMN "comment" TEXT;

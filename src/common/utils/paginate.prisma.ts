@@ -35,7 +35,7 @@ async function prismaPaginate<T>(
   return {
     items,
     meta: {
-      total,          // umumiy count (filter bo‘yicha)
+      total, // umumiy count (filter bo‘yicha)
       count: items.length, // hozirgi page dagi elementlar soni
       page,
       limit,

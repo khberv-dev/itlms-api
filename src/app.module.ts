@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import * as redisStore from 'cache-manager-redis-store';
 import { ConfigModule } from '@nestjs/config';
 
-import configuration from './config'
+import configuration from './config';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SellerModule } from './modules/employee/seller/seller.module';
@@ -23,6 +23,7 @@ import { StudentStatusModule } from './modules/student-status/student-status.mod
 import { StudentFrozenModule } from './modules/student-frozen/student-frozen.module';
 import { StudentDroppedModule } from './modules/student-dropped/student-dropped.module';
 import { GroupSnapshotModule } from './modules/group_monthly_snapshot/group_monthly_snapshot.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -34,7 +35,7 @@ import { GroupSnapshotModule } from './modules/group_monthly_snapshot/group_mont
       isGlobal: true,
       store: redisStore,
       host: 'localhost',
-      port:  6379,
+      port: 6379,
     }),
     ScheduleModule.forRoot(),
     AdministrationModule,
@@ -54,7 +55,7 @@ import { GroupSnapshotModule } from './modules/group_monthly_snapshot/group_mont
     StudentFrozenModule,
     StudentStatusModule,
     UserModule,
-    WebSocketModule
+    WebSocketModule,
   ],
 })
 export class AppModule {}

@@ -13,8 +13,9 @@ ALTER TYPE "StudentStatus" ADD VALUE 'frozen';
 ALTER TYPE "StudentStatus" ADD VALUE 'dropped';
 
 -- AlterTable
-ALTER TABLE "student_frozen" ADD COLUMN     "unfreeze_comment" TEXT,
+ALTER TABLE "student_frozen"
+    ADD COLUMN "unfreeze_comment" TEXT,
 ADD COLUMN     "unfrozen_at" TIMESTAMP(3);
 
 -- CreateIndex
-CREATE INDEX "student_frozen_end_date_idx" ON "student_frozen"("end_date");
+CREATE INDEX "student_frozen_end_date_idx" ON "student_frozen" ("end_date");

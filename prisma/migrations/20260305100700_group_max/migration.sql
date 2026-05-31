@@ -5,4 +5,5 @@
 
 */
 -- AlterTable
-ALTER TABLE "group" ALTER COLUMN "max_students" SET NOT NULL;
+ALTER TABLE "group"
+    ALTER COLUMN "max_students" SET NOT NULL;

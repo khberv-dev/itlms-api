@@ -5,9 +5,9 @@ import { GroupRepository } from './group.repository';
 import { GroupController } from './group.controller';
 
 @Module({
-  imports:[PrismaModule],
+  imports: [PrismaModule],
   controllers: [GroupController],
-  providers: [GroupService,GroupRepository],
-  exports:[GroupService]
+  providers: [GroupService, GroupRepository],
+  exports: [GroupService],
 })
 export class GroupModule {}

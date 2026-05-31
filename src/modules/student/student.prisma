@@ -1,4 +1,3 @@
-
 enum StudentAddress {
   toshkent
   toshkent_vil
@@ -42,32 +41,31 @@ enum StudentStatus {
   completed
 }
 
-
 model student {
-  id                       String             @id @default(uuid())
-  address                  StudentAddress     @default(other)    
-  job                      StudentJob         @default(other)
-  telegram                 String? 
-  access_expires_at        DateTime?
-  status                   StudentStatus?     @default(new)
+  id                String         @id @default(uuid())
+  address           StudentAddress @default(other)
+  job               StudentJob     @default(other)
+  telegram          String?
+  access_expires_at DateTime?
+  status            StudentStatus? @default(new)
 
-  user                     user               @relation(fields: [user_id], references: [id])
-  user_id                  String             @unique
-    
-  seller                   seller?            @relation(fields: [seller_id], references: [id])
-  seller_id                String?
+  user    user   @relation(fields: [user_id], references: [id])
+  user_id String @unique
 
-  group                    group?             @relation(fields: [group_id], references: [id])
-  group_id                 String?
+  seller    seller? @relation(fields: [seller_id], references: [id])
+  seller_id String?
 
-  sales                    sale[]
-  attendances              attendance[]
-  lesson_attendances       lesson_attendance[]
-  sale_break_downs         sale_break_down[]
-  group_students           group_student[] 
-  assignment_submissions   assignment_submission[]
+  group    group?  @relation(fields: [group_id], references: [id])
+  group_id String?
 
-  student_statuses         student_status[]
-  frozen_periods           student_frozen[]
-  dropped                  student_dropped[]
+  sales                  sale[]
+  attendances            attendance[]
+  lesson_attendances     lesson_attendance[]
+  sale_break_downs       sale_break_down[]
+  group_students         group_student[]
+  assignment_submissions assignment_submission[]
+
+  student_statuses student_status[]
+  frozen_periods   student_frozen[]
+  dropped          student_dropped[]
 }

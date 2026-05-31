@@ -18,7 +18,8 @@ DROP INDEX IF EXISTS "seller_monthly_kpi_seller_id_date_key";
 -- sale_month_plan
 -- ==========================
 ALTER TABLE "sale_month_plan"
-DROP COLUMN "date",
+DROP
+COLUMN "date",
 ADD COLUMN "year" INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
 ADD COLUMN "month" INTEGER NOT NULL DEFAULT EXTRACT(MONTH FROM CURRENT_DATE);
 
@@ -26,7 +27,8 @@ ADD COLUMN "month" INTEGER NOT NULL DEFAULT EXTRACT(MONTH FROM CURRENT_DATE);
 -- seller_month_plan
 -- ==========================
 ALTER TABLE "seller_month_plan"
-DROP COLUMN "date",
+DROP
+COLUMN "date",
 ADD COLUMN "year" INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
 ADD COLUMN "month" INTEGER NOT NULL DEFAULT EXTRACT(MONTH FROM CURRENT_DATE);
 
@@ -34,8 +36,10 @@ ADD COLUMN "month" INTEGER NOT NULL DEFAULT EXTRACT(MONTH FROM CURRENT_DATE);
 -- seller_monthly_kpi
 -- ==========================
 ALTER TABLE "seller_monthly_kpi"
-DROP COLUMN "date",
+DROP
+COLUMN "date",
 ADD COLUMN "year" INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),
 ADD COLUMN "month" INTEGER NOT NULL DEFAULT EXTRACT(MONTH FROM CURRENT_DATE),
-DROP COLUMN "conversion_completed",
+DROP
+COLUMN "conversion_completed",
 ADD COLUMN "conversion_completed" JSONB NOT NULL;

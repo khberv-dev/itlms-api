@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -26,7 +26,9 @@ export class FileResponseDto {
   @ApiProperty({ example: 'avatars/1234567890-photo.jpg' })
   key: string;
 
-  @ApiProperty({ example: 'https://pub-xxx.r2.dev/avatars/1234567890-photo.jpg' })
+  @ApiProperty({
+    example: 'https://pub-xxx.r2.dev/avatars/1234567890-photo.jpg',
+  })
   url: string;
 
   @ApiProperty({ example: 'photo.jpg' })

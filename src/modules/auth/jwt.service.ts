@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -10,16 +10,15 @@ export class JwtTokenService {
   ) {}
 
   getJWT(type: 'access' | 'refresh', sub: string, role) {
-    const payload = { sub,role };
+    const payload = { sub, role };
     const jwtConfig = this.configService.getOrThrow('jwt');
 
     if (type === 'access') {
-      return this.jwtService.sign(payload,{
-      secret: jwtConfig.accessTokenSecret,
-      expiresIn: jwtConfig.accessTokenExpiration,
-    });
+      return this.jwtService.sign(payload, {
+        secret: jwtConfig.accessTokenSecret,
+        expiresIn: jwtConfig.accessTokenExpiration,
+      });
     }
-
 
     return this.jwtService.sign(payload, {
       secret: jwtConfig.refreshTokenSecret,
@@ -62,10 +61,8 @@ export class JwtTokenService {
     return payload;
   }
 
-
   async decodeTokenForRegister(token: string) {
-
-    if(!token) return null
+    if (!token) return null;
 
     const jwtConfig = this.configService.getOrThrow('jwt');
 
@@ -74,8 +71,8 @@ export class JwtTokenService {
         secret: jwtConfig.accessTokenSecret,
       })
       .catch((err) => {
-        return null
+        return null;
       });
-    return payload || null
+    return payload || null;
   }
 }

@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGroupDto, UpdateGroupDto, AddStudentsToGroupDto, GetGroupFilterDto } from './dto';
+import { AddStudentsToGroupDto, CreateGroupDto, UpdateGroupDto } from './dto';
 import { GroupRepository } from './group.repository';
-import { buildGroupWhere } from './filters/group.filter';
 
 @Injectable()
 export class GroupService {
-  constructor(private readonly groupRepository: GroupRepository) { }
+  constructor(private readonly groupRepository: GroupRepository) {}
 
-  async findAll(status?:string) {
-    const where:any = {}
-    status ? where.status = status : null
+  async findAll(status?: string) {
+    const where: any = {};
+    status ? (where.status = status) : null;
     const groups = await this.groupRepository.findAll(where);
 
     return groups.map((group: any) => {
@@ -32,7 +31,6 @@ export class GroupService {
         status: group.status,
       };
     });
-
   }
 
   async findOne(id: string) {

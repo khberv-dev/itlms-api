@@ -1,29 +1,20 @@
 import {
+  Body,
   Controller,
-  Post,
   Delete,
   Get,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
+  Post,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
-  Body,
-  ParseFilePipe,
-  MaxFileSizeValidator,
-  FileTypeValidator,
-  Query,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiConsumes,
-  ApiBody,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { FileService } from './file.service';
-import { UploadFileDto, FileResponseDto } from './dto';
+import { FileResponseDto, UploadFileDto } from './dto';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_FILES = 10;
@@ -45,7 +36,11 @@ export class FileController {
       type: 'object',
       properties: {
         file: { type: 'string', format: 'binary' },
-        folder: { type: 'string', example: 'avatars', description: 'Storage papkasi' },
+        folder: {
+          type: 'string',
+          example: 'avatars',
+          description: 'Storage papkasi',
+        },
         is_active: { type: 'boolean', description: 'Darhol active qilish' },
       },
       required: ['file'],
@@ -70,7 +65,7 @@ export class FileController {
    * Ko'p fayl yuklash (task attachments uchun)
    */
   @Post('upload-many')
-  @ApiOperation({ summary: 'Ko\'p fayl yuklash (max 10 ta)' })
+  @ApiOperation({ summary: "Ko'p fayl yuklash (max 10 ta)" })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -99,7 +94,7 @@ export class FileController {
    * Fayl ma'lumotlarini olish
    */
   @Get(':id')
-  @ApiOperation({ summary: 'Fayl ma\'lumotlarini ID boyicha olish' })
+  @ApiOperation({ summary: "Fayl ma'lumotlarini ID boyicha olish" })
   @ApiParam({ name: 'id', description: 'File ID' })
   async getFile(@Param('id') id: string): Promise<FileResponseDto> {
     return this.fileService.findById(id);
@@ -110,7 +105,7 @@ export class FileController {
    * Faylni storage va DB dan o'chirish
    */
   @Delete(':id')
-  @ApiOperation({ summary: 'Faylni o\'chirish (storage + DB)' })
+  @ApiOperation({ summary: "Faylni o'chirish (storage + DB)" })
   @ApiParam({ name: 'id', description: 'File ID' })
   async deleteFile(@Param('id') id: string): Promise<{ message: string }> {
     return this.fileService.delete(id);

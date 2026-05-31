@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID, IsDateString, IsOptional, IsArray } from 'class-validator';
+import { IsArray, IsDateString, IsOptional, IsString, IsUUID } from 'class-validator';
 
 class CreateAssignmentDto {
-
   @ApiProperty()
   @IsString()
   title: string;

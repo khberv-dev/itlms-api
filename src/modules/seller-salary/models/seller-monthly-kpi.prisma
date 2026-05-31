@@ -1,17 +1,16 @@
-
 model seller_monthly_kpi {
-  id                       String       @id @default(uuid())
-  year                     Int?         @default(dbgenerated("EXTRACT(YEAR FROM CURRENT_DATE)"))
-  month                    Int?         @default(dbgenerated("EXTRACT(MONTH FROM CURRENT_DATE)"))
-  
-  conversion_completed     Json? 
-  
-  sale_sum                 Int?
-  sale_target              Int?
-  sale_completed           Boolean?
+  id    String @id @default(uuid())
+  year  Int?   @default(dbgenerated("EXTRACT(YEAR FROM CURRENT_DATE)"))
+  month Int?   @default(dbgenerated("EXTRACT(MONTH FROM CURRENT_DATE)"))
 
-  seller                   seller       @relation(fields: [seller_id], references: [id])
-  seller_id                String
+  conversion_completed Json?
+
+  sale_sum       Int?
+  sale_target    Int?
+  sale_completed Boolean?
+
+  seller    seller @relation(fields: [seller_id], references: [id])
+  seller_id String
 
   @@unique([seller_id, year, month])
 }

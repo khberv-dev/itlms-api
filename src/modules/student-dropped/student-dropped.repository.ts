@@ -14,7 +14,7 @@ interface CreateDroppedParams {
 
 @Injectable()
 export class StudentDroppedRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findStudentById(student_id: string) {
     return this.prisma.student.findUnique({
@@ -41,7 +41,7 @@ export class StudentDroppedRepository {
     });
   }
 
-  async getDroppedReasonCounts(startDate: string, endDate:string) {
+  async getDroppedReasonCounts(startDate: string, endDate: string) {
     return this.prisma.student_dropped.groupBy({
       by: ['reason'],
       where: {
