@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../_prisma/prisma.service';
 import { mapRole } from './helpers/role-map';
+import { BadRequestException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class UserRepository {
@@ -47,8 +48,8 @@ export class UserRepository {
         where: { [role]: { id } },
         include: { [role]: true },
       })
-      .catch(() => {
-        throw new NotFoundException('data not found');
+      .catch((err) => {
+        throw new BadRequestException(err.toString());
       });
     return { ...user, password: null };
   }
