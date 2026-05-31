@@ -1,0 +1,24 @@
+
+
+model file {
+  id               String          @id @default(uuid())
+  key              String          @unique                 // R2 da storage path: "avatars/123-uuid.jpg"
+  url              String                                  // Public URL
+  filename         String                                  // Original nom: "photo.jpg"
+  mimetype         String                                  // "image/jpeg"
+  size             Int                                     // bytes
+  bucket           String                                  // R2 bucket nomi
+  is_active        Boolean         @default(false)
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+      
+  sale             sale?     
+  user             user? 
+
+  assignment       assignment?           @relation(fields: [assignment_id], references: [id])
+  assignment_id    String?   
+
+  assignment_submission       assignment_submission?           @relation(fields: [assignment_submission_id], references: [id])
+  assignment_submission_id    String?   
+
+}

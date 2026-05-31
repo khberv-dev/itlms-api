@@ -1,0 +1,40 @@
+
+enum FrozenReason {
+  financial
+  busy        // ish, imtihon
+  health
+  course_dislike
+  other
+}
+
+model student_frozen {
+  id                String        @id @default(uuid())
+  start_date        DateTime      @default(now())
+  end_date          DateTime      
+  reason            FrozenReason
+  affects_retention Boolean       @default(false)
+  comment           String?
+
+  // Muzlatish tugaganda to'ldiriladi
+  unfrozen_at       DateTime?     // null = hali aktiv
+
+  created_at        DateTime      @default(now())
+
+  created_by        user?         @relation(fields: [created_by_id], references: [id])
+  created_by_id     String?
+
+  student           student       @relation(fields: [student_id], references: [id])
+  student_id        String
+
+  group             group?        @relation(fields: [group_id], references: [id])
+  group_id          String?
+
+  mentor            mentor?       @relation("FrozenMentor", fields: [mentor_id], references: [id])
+  mentor_id         String?
+
+  assistant         mentor?       @relation("FrozenAssistant", fields: [assistant_id], references: [id])
+  assistant_id      String?
+
+  @@index([student_id, start_date])
+  @@index([end_date])           // cron job uchun: muddati tugaganlarni topish
+}

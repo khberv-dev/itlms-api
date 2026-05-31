@@ -1,0 +1,45 @@
+
+enum SaleType {
+  new
+  resale
+}
+
+enum PaymentType {
+  installment
+  full
+}
+
+enum SaleSource {
+  meta
+  direct
+  telegram
+  youtube
+  website
+  referal
+  other
+}
+
+
+model sale {
+  id             String       @id @default(uuid())
+  source         SaleSource?  
+  month          Int 
+  sum            Decimal      @db.Decimal(18, 2)
+  created_at     DateTime     @default(now())
+  date           DateTime?    @default(now())
+  type           SaleType     @default(new)
+  comment        String? 
+  payment_type   PaymentType?  @default(full) 
+  
+
+  seller         seller?      @relation(fields: [seller_id], references: [id])
+  seller_id      String?      
+
+  student        student      @relation(fields: [student_id], references: [id])
+  student_id     String  
+
+  file           file?         @relation(fields: [file_id], references: [id])
+  file_id        String?       @unique
+
+  sale_break_downs   sale_break_down[]
+} 

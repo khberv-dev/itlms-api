@@ -1,0 +1,81 @@
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+
+@Injectable()
+export class JwtTokenService {
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
+
+  getJWT(type: 'access' | 'refresh', sub: string, role) {
+    const payload = { sub,role };
+    const jwtConfig = this.configService.getOrThrow('jwt');
+
+    if (type === 'access') {
+      return this.jwtService.sign(payload,{
+      secret: jwtConfig.accessTokenSecret,
+      expiresIn: jwtConfig.accessTokenExpiration,
+    });
+    }
+
+
+    return this.jwtService.sign(payload, {
+      secret: jwtConfig.refreshTokenSecret,
+      expiresIn: jwtConfig.refreshTokenExpiration,
+    });
+  }
+
+  generateToken(payload) {
+    const jwtConfig = this.configService.getOrThrow('jwt');
+
+    return this.jwtService.sign(payload, {
+      secret: jwtConfig.accessTokenSecret,
+      expiresIn: 60 * 2,
+    });
+  }
+
+  async decodeToken(token: string) {
+    const jwtConfig = this.configService.getOrThrow('jwt');
+
+    const payload = await this.jwtService
+      .verifyAsync(token, {
+        secret: jwtConfig.accessTokenSecret,
+      })
+      .catch((err) => {
+        throw new HttpException(err.message, 400);
+      });
+    return payload;
+  }
+
+  async decodeRefreshToken(token: string) {
+    const jwtConfig = this.configService.getOrThrow('jwt');
+
+    const payload = await this.jwtService
+      .verifyAsync(token, {
+        secret: jwtConfig.refreshTokenSecret,
+      })
+      .catch((err) => {
+        throw new HttpException(err.message, 400);
+      });
+    return payload;
+  }
+
+
+  async decodeTokenForRegister(token: string) {
+
+    if(!token) return null
+
+    const jwtConfig = this.configService.getOrThrow('jwt');
+
+    const payload = await this.jwtService
+      .verifyAsync(token, {
+        secret: jwtConfig.accessTokenSecret,
+      })
+      .catch((err) => {
+        return null
+      });
+    return payload || null
+  }
+}

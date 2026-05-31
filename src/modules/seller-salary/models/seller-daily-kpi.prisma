@@ -1,0 +1,25 @@
+
+
+model seller_daily_kpi {
+  id                    String       @id @default(uuid()) 
+  date                  DateTime     @db.Date
+
+  started_time          String?
+  started_time_target   String?       
+  started_on_time       Boolean?
+  
+  qa_passed             Boolean?
+
+  calls_count           Int?
+  calls_target          Int?          @default(45)
+  calls_done            Boolean?
+
+  talk_time_seconds     Int?
+  talk_time_target      Int?          @default(9000)
+  talk_time_done        Boolean?
+
+  seller                seller       @relation(fields: [seller_id], references: [id])
+  seller_id             String
+
+  @@unique([seller_id,date])
+}

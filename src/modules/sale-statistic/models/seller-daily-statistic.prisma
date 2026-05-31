@@ -1,0 +1,21 @@
+
+model seller_daily_statistic {
+  id                               String     @id @default(uuid())
+  date                             DateTime   @db.Date
+  leads_count                      Int        @default(0)
+  time                             Int        @default(0)
+  total_count                      Int        @default(0)
+  income_count                     Int        @default(0)
+  outgoing_count                   Int        @default(0)
+  succes_count                     Int        @default(0)
+  outgoing_succes_count            Int        @default(0)
+  income_succes_count              Int        @default(0)
+  failed_count                     Int        @default(0)
+  income_call_time                 Int        @default(0)
+  outgoing_call_time               Int        @default(0)
+
+  seller                           seller     @relation(fields: [seller_id], references: [id])
+  seller_id                        String
+
+  @@unique([seller_id, date])
+}

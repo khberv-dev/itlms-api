@@ -1,0 +1,27 @@
+
+
+model student_status {
+  id                String           @id @default(uuid())
+  from_status       StudentStatus?
+  to_status         StudentStatus
+  changed_at        DateTime         @default(now())
+  affects_retention Boolean          @default(false) // frozen(yoqmayapti) yoki dropped => true
+  comment           String?
+
+  changed_by        user?            @relation(fields: [changed_by_id], references: [id])
+  changed_by_id     String?
+
+  student           student          @relation(fields: [student_id], references: [id])
+  student_id        String
+
+  group             group?           @relation(fields: [group_id], references: [id])
+  group_id          String?
+
+  mentor            mentor?          @relation("StatusMentor", fields: [mentor_id], references: [id])
+  mentor_id         String?
+
+  assistant         mentor?          @relation("StatusAssistant", fields: [assistant_id], references: [id])
+  assistant_id      String?
+
+  @@index([student_id, changed_at])
+}

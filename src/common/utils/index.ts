@@ -1,0 +1,1 @@
+export { default as prismaPaginate } from './paginate.prisma';

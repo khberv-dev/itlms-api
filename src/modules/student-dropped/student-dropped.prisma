@@ -1,0 +1,36 @@
+
+enum DroppedReason {
+  course_quality
+  financial
+  no_time
+  switched_course
+  mentor_dislike
+  other
+}
+
+model student_dropped {
+  id           String        @id @default(uuid())
+  dropped_at   DateTime      @default(now())
+  reason       DroppedReason
+  comment      String?
+
+  // Admin tomonidan to'ldiriladi
+  created_by   user?         @relation(fields: [created_by_id], references: [id])
+  created_by_id String?
+
+  student      student       @relation(fields: [student_id], references: [id])
+  student_id   String
+
+  // Ketish paytidagi snapshot
+  group        group?        @relation(fields: [group_id], references: [id])
+  group_id     String?
+
+  mentor       mentor?       @relation("DroppedMentor", fields: [mentor_id], references: [id])
+  mentor_id    String?
+
+  assistant    mentor?       @relation("DroppedAssistant", fields: [assistant_id], references: [id])
+  assistant_id String?
+
+  @@index([student_id])
+  @@index([group_id, dropped_at])
+}

@@ -1,0 +1,672 @@
+
+enum SaleType {
+  new
+  resale
+}
+
+enum PaymentType {
+  installment
+  full
+}
+
+enum SaleSource {
+  meta
+  direct
+  telegram
+  youtube
+  website
+  referal
+  other
+}
+
+
+model sale {
+  id             String       @id @default(uuid())
+  source         SaleSource?  
+  month          Int 
+  sum            Decimal      @db.Decimal(18, 2)
+  created_at     DateTime     @default(now())
+  date           DateTime?    @default(now())
+  type           SaleType     @default(new)
+  comment        String? 
+  payment_type   PaymentType?  @default(full) 
+  
+
+  seller         seller?      @relation(fields: [seller_id], references: [id])
+  seller_id      String?      
+
+  student        student      @relation(fields: [student_id], references: [id])
+  student_id     String  
+
+  file           file?         @relation(fields: [file_id], references: [id])
+  file_id        String?       @unique
+
+  sale_break_downs   sale_break_down[]
+} 
+model sale_break_down {
+  id           String   @id @default(uuid())
+  
+  sale         sale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+  sale_id      String
+  
+  student      student  @relation(fields: [student_id], references: [id])
+  student_id   String
+
+  month        Int      
+  year         Int      
+  days_count   Int      
+  amount       Decimal  @db.Decimal(18, 2)
+
+  created_at   DateTime @default(now())
+
+  @@index([year, month])
+}
+enum DroppedReason {
+  course_quality
+  financial
+  no_time
+  switched_course
+  mentor_dislike
+  other
+}
+
+model student_dropped {
+  id           String        @id @default(uuid())
+  dropped_at   DateTime      @default(now())
+  reason       DroppedReason
+  comment      String?
+
+  // Admin tomonidan to'ldiriladi
+  created_by   user?         @relation(fields: [created_by_id], references: [id])
+  created_by_id String?
+
+  student      student       @relation(fields: [student_id], references: [id])
+  student_id   String
+
+  // Ketish paytidagi snapshot
+  group        group?        @relation(fields: [group_id], references: [id])
+  group_id     String?
+
+  mentor       mentor?       @relation("DroppedMentor", fields: [mentor_id], references: [id])
+  mentor_id    String?
+
+  assistant    mentor?       @relation("DroppedAssistant", fields: [assistant_id], references: [id])
+  assistant_id String?
+
+  @@index([student_id])
+  @@index([group_id, dropped_at])
+}
+
+
+model attendance {
+  id                 String           @id @default(uuid())
+  created_at         DateTime         @default(now())
+  date               DateTime         @db.Date
+  is_present         Boolean?         @default(false)
+
+  student            student          @relation(fields: [student_id], references: [id])
+  student_id         String
+
+  group              group            @relation(fields: [group_id], references: [id])
+  group_id           String
+
+  mentor             mentor           @relation(fields: [mentor_id], references: [id])
+  mentor_id          String
+
+  @@unique([student_id, group_id, date])
+}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  student
+  rop
+  seller
+  mentor
+  assistant
+  admin
+}
+
+enum UserGender {
+  male
+  female
+}
+
+model user {
+  id              String       @id @default(uuid())
+  phone           String       @unique
+  email           String?      @unique
+  password        String? 
+  first_name      String? 
+  last_name       String? 
+  avatar_url      String? 
+  role            Role
+  gender          UserGender?  
+  birthday        DateTime? 
+  created_at      DateTime     @default(now())
+  updated_at      DateTime? 
+  deleted_at      DateTime? 
+
+  seller          seller?
+  student         student?
+  mentor          mentor?
+  administration  administration?
+
+  avatar          file?     @relation(fields: [avatar_id], references: [id])
+  avatar_id       String?   @unique
+
+  status_changes      student_status[]
+  frozen_created      student_frozen[]
+  dropped_created     student_dropped[]
+  transfers_created   group_student[]
+}
+
+model assignment_submission {
+  id              String    @id @default(uuid())
+
+  assignment      assignment @relation(fields: [assignment_id], references: [id])
+  assignment_id   String
+
+  student         student    @relation(fields: [student_id], references: [id])
+  student_id      String
+
+  content         String?    // text response
+  file_url        String?    // optional file
+
+  score           Float?     // 0 - 10
+  percentage      Float?     // 0 - 100
+
+  comment         String?    // mentor comment
+  created_at      DateTime   @default(now())
+  reviewed_at     DateTime?
+
+  files           file[]
+
+  @@unique([assignment_id, student_id])
+}enum AssignmentStatus {
+  active
+  closed
+}
+
+model assignment {
+  id            String           @id @default(uuid())
+  title         String
+  description   String?
+  due_date      DateTime
+  max_score     Int              @default(10)
+  status        AssignmentStatus @default(active)
+  created_at    DateTime         @default(now())
+
+  group         group            @relation(fields: [group_id], references: [id])
+  group_id      String
+
+  mentor        mentor           @relation(fields: [mentor_id], references: [id])
+  mentor_id     String
+
+  files         file[]
+
+  submissions   assignment_submission[]
+}
+
+model seller_daily_kpi {
+  id                    String       @id @default(uuid()) 
+  date                  DateTime     @db.Date
+
+  started_time          String?
+  started_time_target   String?       
+  started_on_time       Boolean?
+  
+  qa_passed             Boolean?
+
+  calls_count           Int?
+  calls_target          Int?          @default(45)
+  calls_done            Boolean?
+
+  talk_time_seconds     Int?
+  talk_time_target      Int?          @default(9000)
+  talk_time_done        Boolean?
+
+  seller                seller       @relation(fields: [seller_id], references: [id])
+  seller_id             String
+
+  @@unique([seller_id,date])
+}
+
+model seller_monthly_kpi {
+  id                       String       @id @default(uuid())
+  year                     Int?         @default(dbgenerated("EXTRACT(YEAR FROM CURRENT_DATE)"))
+  month                    Int?         @default(dbgenerated("EXTRACT(MONTH FROM CURRENT_DATE)"))
+  
+  conversion_completed     Json? 
+  
+  sale_sum                 Int?
+  sale_target              Int?
+  sale_completed           Boolean?
+
+  seller                   seller       @relation(fields: [seller_id], references: [id])
+  seller_id                String
+
+  @@unique([seller_id, year, month])
+}
+
+
+model student_status {
+  id                String           @id @default(uuid())
+  from_status       StudentStatus?
+  to_status         StudentStatus
+  changed_at        DateTime         @default(now())
+  affects_retention Boolean          @default(false) // frozen(yoqmayapti) yoki dropped => true
+  comment           String?
+
+  changed_by        user?            @relation(fields: [changed_by_id], references: [id])
+  changed_by_id     String?
+
+  student           student          @relation(fields: [student_id], references: [id])
+  student_id        String
+
+  group             group?           @relation(fields: [group_id], references: [id])
+  group_id          String?
+
+  mentor            mentor?          @relation("StatusMentor", fields: [mentor_id], references: [id])
+  mentor_id         String?
+
+  assistant         mentor?          @relation("StatusAssistant", fields: [assistant_id], references: [id])
+  assistant_id      String?
+
+  @@index([student_id, changed_at])
+}model group_monthly_snapshot {
+  id                    String   @id @default(uuid())
+  year                  Int
+  month                 Int
+
+  // -----------------------------------------------
+  // TO'LIQ OY (1 - oy oxiri)
+  // -----------------------------------------------
+  active_count_start    Int      @default(0)   // Oy boshi
+  active_count_end      Int      @default(0)   // Oy oxiri
+  joined_count          Int      @default(0)
+  churned_count         Int      @default(0)
+  transferred_out_count Int      @default(0)
+  transferred_in_count  Int      @default(0)
+  expired_count         Int      @default(0)
+  company_churned_count Int      @default(0)
+  mentor_churned_count Int      @default(0)
+  retention_rate        Float?
+  churn_rate            Float?
+  company_churn_rate    Float?
+  mentor_churn_rate    Float?
+  ltv                   Decimal? @db.Decimal(18, 2)
+
+  // -----------------------------------------------
+  // 1-YARM (1 - 15)
+  // -----------------------------------------------
+  h1_active_count_start    Int      @default(0)   // 1-sana boshi
+  h1_active_count_end      Int      @default(0)   // 15-sana oxiri
+  h1_joined_count          Int      @default(0)
+  h1_churned_count         Int      @default(0)
+  h1_transferred_out_count Int      @default(0)
+  h1_transferred_in_count  Int      @default(0)
+  h1_expired_count         Int      @default(0)
+  h1_company_churned_count Int      @default(0)
+  h1_mentor_churned_count Int      @default(0)
+  h1_retention_rate        Float?
+  h1_churn_rate            Float?
+  h1_company_churn_rate    Float?
+  h1_mentor_churn_rate    Float?
+  h1_ltv                   Decimal? @db.Decimal(18, 2)
+  h1_calculated_at         DateTime?
+
+  // -----------------------------------------------
+  // 2-YARM (16 - oy oxiri)
+  // -----------------------------------------------
+  h2_active_count_start    Int      @default(0)   // 16-sana boshi
+  h2_active_count_end      Int      @default(0)   // Oy oxiri
+  h2_joined_count          Int      @default(0)
+  h2_churned_count         Int      @default(0)
+  h2_transferred_out_count Int      @default(0)
+  h2_transferred_in_count  Int      @default(0)
+  h2_expired_count         Int      @default(0)
+  h2_company_churned_count Int      @default(0)
+  h2_mentor_churned_count Int      @default(0)
+  h2_retention_rate        Float?
+  h2_churn_rate            Float?
+  h2_company_churn_rate    Float?
+  h2_mentor_churn_rate    Float?
+  h2_ltv                   Decimal? @db.Decimal(18, 2)
+  h2_calculated_at         DateTime?
+
+  // -----------------------------------------------
+  // RELATIONS
+  // -----------------------------------------------
+  group                 group    @relation(fields: [group_id], references: [id])
+  group_id              String
+
+  mentor                mentor?  @relation("SnapshotMentor", fields: [mentor_id], references: [id])
+  mentor_id             String?
+
+  assistant             mentor?  @relation("SnapshotAssistant", fields: [assistant_id], references: [id])
+  assistant_id          String?
+
+  calculated_at         DateTime @default(now())  // To'liq oy hisoblangan vaqt
+
+  @@unique([group_id, year, month])
+  @@index([mentor_id, year, month])
+  @@index([year, month])
+}
+enum FrozenReason {
+  financial
+  busy        // ish, imtihon
+  health
+  course_dislike
+  other
+}
+
+model student_frozen {
+  id                String        @id @default(uuid())
+  start_date        DateTime      @default(now())
+  end_date          DateTime      
+  reason            FrozenReason
+  affects_retention Boolean       @default(false)
+  comment           String?
+
+  // Muzlatish tugaganda to'ldiriladi
+  unfrozen_at       DateTime?     // null = hali aktiv
+
+  created_at        DateTime      @default(now())
+
+  created_by        user?         @relation(fields: [created_by_id], references: [id])
+  created_by_id     String?
+
+  student           student       @relation(fields: [student_id], references: [id])
+  student_id        String
+
+  group             group?        @relation(fields: [group_id], references: [id])
+  group_id          String?
+
+  mentor            mentor?       @relation("FrozenMentor", fields: [mentor_id], references: [id])
+  mentor_id         String?
+
+  assistant         mentor?       @relation("FrozenAssistant", fields: [assistant_id], references: [id])
+  assistant_id      String?
+
+  @@index([student_id, start_date])
+  @@index([end_date])           // cron job uchun: muddati tugaganlarni topish
+}
+enum StudentAddress {
+  toshkent
+  toshkent_vil
+  samarqand
+  buxoro
+  xorazm
+  fargona
+  andijon
+  namangan
+  qashqadaryo
+  jizzax
+  sirdaryo
+  navoiy
+  surxandaryo
+  qoraqalpogiston
+  other
+}
+
+enum StudentJob {
+  pupil
+  student
+  teacher
+  preschool_education
+  state_job
+  entrepreneur
+  financial_sector
+  housewife
+  medical_staff
+  military
+  law_field
+  other
+}
+
+enum StudentStatus {
+  new
+  active
+  expired
+  blocked
+  frozen
+  dropped
+  completed
+}
+
+
+model student {
+  id                       String             @id @default(uuid())
+  address                  StudentAddress     @default(other)    
+  job                      StudentJob         @default(other)
+  telegram                 String? 
+  access_expires_at        DateTime?
+  status                   StudentStatus?     @default(new)
+
+  user                     user               @relation(fields: [user_id], references: [id])
+  user_id                  String             @unique
+    
+  seller                   seller?            @relation(fields: [seller_id], references: [id])
+  seller_id                String?
+
+  group                    group?             @relation(fields: [group_id], references: [id])
+  group_id                 String?
+
+  sales                    sale[]
+  attendances              attendance[]
+  sale_break_downs         sale_break_down[]
+  group_students           group_student[] 
+  assignment_submissions   assignment_submission[]
+
+  student_statuses         student_status[]
+  frozen_periods           student_frozen[]
+  dropped                  student_dropped[]
+}
+enum TransferReason {
+  mentor_issue
+  schedule_conflict
+  level_change
+  personal
+  other
+}
+
+
+model group_student {
+  id             String         @id @default(uuid())
+  group_id       String
+  student_id     String
+  mentor_id      String?
+  assistant_id   String?
+
+  joined_at      DateTime       @default(now())
+  left_at        DateTime?
+
+  // Transfer ma'lumotlari (null = birinchi marta qo'shilgan)
+  transfer_reason          TransferReason?
+  transfer_comment         String?
+  transfer_created_by      user?    @relation(fields: [transfer_created_by_id], references: [id])
+  transfer_created_by_id   String?
+  affects_mentor_retention Boolean  @default(false)
+
+  // prev record ga pointer (qaysi guruhdan keldi)
+  previous_group_student      group_student?  @relation("TransferChain", fields: [previous_group_student_id], references: [id])
+  previous_group_student_id   String?
+  next_group_student          group_student[] @relation("TransferChain")
+
+  group          group          @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  student        student        @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  mentor         mentor?        @relation("MentorGroupStudents", fields: [mentor_id], references: [id])
+  assistant      mentor?        @relation("AssistantGroupStudents", fields: [assistant_id], references: [id])
+
+  @@unique([group_id, student_id, left_at])
+  @@index([student_id])
+  @@index([group_id])
+}
+enum GroupStatus {
+  collecting
+  active
+  paused
+  closed
+}
+
+model group {
+  id                 String           @id @default(uuid())
+  name               String      
+  created_at         DateTime         @default(now())
+  status             GroupStatus      @default(collecting)
+  max_students       Int              @default(25)
+
+  level              group_level?     @relation(fields: [level_id], references: [id])
+  level_id           String?    
+
+  mentor             mentor?          @relation("MentorGroups", fields: [mentor_id], references: [id])
+  mentor_id          String?  
+
+  assistant          mentor?          @relation("AssistantGroups", fields: [assistant_id], references: [id])
+  assistant_id       String? 
+
+  students           student[] 
+  attendances        attendance[] 
+  group_students     group_student[] 
+  assignments        assignment[]
+
+  monthly_snapshots      group_monthly_snapshot[]
+  status_histories       student_status[]
+  frozen_histories       student_frozen[]
+  dropped_histories      student_dropped[]
+}
+
+
+model group_level {
+  id             String       @id @default(uuid())
+  level          String      
+  created_at     DateTime     @default(now()) 
+
+  groups         group[]  
+}
+
+model file {
+  id               String          @id @default(uuid())
+  key              String          @unique                 // R2 da storage path: "avatars/123-uuid.jpg"
+  url              String                                  // Public URL
+  filename         String                                  // Original nom: "photo.jpg"
+  mimetype         String                                  // "image/jpeg"
+  size             Int                                     // bytes
+  bucket           String                                  // R2 bucket nomi
+  is_active        Boolean         @default(false)
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+      
+  sale             sale?     
+  user             user? 
+
+  assignment       assignment?           @relation(fields: [assignment_id], references: [id])
+  assignment_id    String?   
+
+  assignment_submission       assignment_submission?           @relation(fields: [assignment_submission_id], references: [id])
+  assignment_submission_id    String?   
+
+}
+
+model seller_daily_statistic {
+  id                               String     @id @default(uuid())
+  date                             DateTime   @db.Date
+  leads_count                      Int        @default(0)
+  time                             Int        @default(0)
+  total_count                      Int        @default(0)
+  income_count                     Int        @default(0)
+  outgoing_count                   Int        @default(0)
+  succes_count                     Int        @default(0)
+  outgoing_succes_count            Int        @default(0)
+  income_succes_count              Int        @default(0)
+  failed_count                     Int        @default(0)
+  income_call_time                 Int        @default(0)
+  outgoing_call_time               Int        @default(0)
+
+  seller                           seller     @relation(fields: [seller_id], references: [id])
+  seller_id                        String
+
+  @@unique([seller_id, date])
+}
+
+
+model seller_month_plan {
+  id             String       @id @default(uuid())
+  year           Int?         @default(dbgenerated("EXTRACT(YEAR FROM CURRENT_DATE)"))
+  month          Int?         @default(dbgenerated("EXTRACT(MONTH FROM CURRENT_DATE)"))
+  plan           Decimal      @db.Decimal(18, 0)
+  sale           Decimal?     @db.Decimal(18, 0)
+
+  seller         seller   @relation(fields: [seller_id], references: [id])
+  seller_id      String
+  @@unique([seller_id, year, month])
+}
+
+model administration {
+  id                  String     @id @default(uuid())
+
+  user                user       @relation(fields: [user_id], references: [id])
+  user_id             String     @unique
+}
+
+model mentor {
+  id                        String            @id @default(uuid())
+
+  user                      user              @relation(fields: [user_id], references: [id])
+  user_id                   String            @unique
+
+  mentor_groups             group[]           @relation("MentorGroups")
+
+  assistant_groups          group[]           @relation("AssistantGroups")
+
+  mentor_group_students     group_student[]   @relation("MentorGroupStudents")
+
+  assistant_group_students  group_student[]   @relation("AssistantGroupStudents")
+  
+  attendances               attendance[]
+  assignments               assignment[]
+
+  status_as_mentor       student_status[]    @relation("StatusMentor")
+  status_as_assistant    student_status[]    @relation("StatusAssistant")
+  frozen_as_mentor       student_frozen[]    @relation("FrozenMentor")
+  frozen_as_assistant    student_frozen[]    @relation("FrozenAssistant")
+  dropped_as_mentor      student_dropped[]   @relation("DroppedMentor")
+  dropped_as_assistant   student_dropped[]   @relation("DroppedAssistant")
+  snapshots_as_mentor    group_monthly_snapshot[] @relation("SnapshotMentor")
+  snapshots_as_assistant group_monthly_snapshot[] @relation("SnapshotAssistant")
+}enum SellerLevel {
+  junior
+  middle
+  senior
+}
+
+
+model seller {
+  id                     String                  @id @default(uuid())
+  amocrm_id              String?
+  sip                    Int?
+  level                  SellerLevel             @default(junior)
+  today_work_start_time  DateTime? 
+  work_start_time        String?
+  work_end_time          String?
+
+  user                   user                    @relation(fields: [user_id], references: [id])
+  user_id                String                  @unique
+  
+  sales                  sale[]
+  students               student[]
+  month_plans            seller_month_plan[]
+  daily_statistics       seller_daily_statistic[]
+  seller_daily_kpi       seller_daily_kpi[]
+  seller_monthly_kpi     seller_monthly_kpi[]
+}

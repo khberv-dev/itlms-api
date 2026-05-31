@@ -1,0 +1,29 @@
+
+
+model mentor {
+  id                        String            @id @default(uuid())
+
+  user                      user              @relation(fields: [user_id], references: [id])
+  user_id                   String            @unique
+
+  mentor_groups             group[]           @relation("MentorGroups")
+
+  assistant_groups          group[]           @relation("AssistantGroups")
+
+  mentor_group_students     group_student[]   @relation("MentorGroupStudents")
+
+  assistant_group_students  group_student[]   @relation("AssistantGroupStudents")
+  
+  attendances               attendance[]
+  assignments               assignment[]
+
+  status_as_mentor       student_status[]    @relation("StatusMentor")
+  status_as_assistant    student_status[]    @relation("StatusAssistant")
+  frozen_as_mentor       student_frozen[]    @relation("FrozenMentor")
+  frozen_as_assistant    student_frozen[]    @relation("FrozenAssistant")
+  dropped_as_mentor      student_dropped[]   @relation("DroppedMentor")
+  dropped_as_assistant   student_dropped[]   @relation("DroppedAssistant")
+  snapshots_as_mentor    group_monthly_snapshot[] @relation("SnapshotMentor")
+  snapshots_as_assistant group_monthly_snapshot[] @relation("SnapshotAssistant")
+  online_lessons         online_lesson[]
+}

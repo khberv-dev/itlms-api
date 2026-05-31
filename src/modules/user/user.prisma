@@ -1,0 +1,43 @@
+
+enum Role {
+  student
+  rop
+  seller
+  mentor
+  assistant
+  admin
+}
+
+enum UserGender {
+  male
+  female
+}
+
+model user {
+  id              String       @id @default(uuid())
+  phone           String       @unique
+  email           String?      @unique
+  password        String? 
+  first_name      String? 
+  last_name       String? 
+  avatar_url      String? 
+  role            Role
+  gender          UserGender?  
+  birthday        DateTime? 
+  created_at      DateTime     @default(now())
+  updated_at      DateTime? 
+  deleted_at      DateTime? 
+
+  seller          seller?
+  student         student?
+  mentor          mentor?
+  administration  administration?
+
+  avatar          file?     @relation(fields: [avatar_id], references: [id])
+  avatar_id       String?   @unique
+
+  status_changes      student_status[]
+  frozen_created      student_frozen[]
+  dropped_created     student_dropped[]
+  transfers_created   group_student[]
+}

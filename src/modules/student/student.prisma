@@ -1,0 +1,73 @@
+
+enum StudentAddress {
+  toshkent
+  toshkent_vil
+  samarqand
+  buxoro
+  xorazm
+  fargona
+  andijon
+  namangan
+  qashqadaryo
+  jizzax
+  sirdaryo
+  navoiy
+  surxandaryo
+  qoraqalpogiston
+  other
+}
+
+enum StudentJob {
+  pupil
+  student
+  teacher
+  preschool_education
+  state_job
+  entrepreneur
+  financial_sector
+  housewife
+  medical_staff
+  military
+  law_field
+  other
+}
+
+enum StudentStatus {
+  new
+  active
+  expired
+  blocked
+  frozen
+  dropped
+  completed
+}
+
+
+model student {
+  id                       String             @id @default(uuid())
+  address                  StudentAddress     @default(other)    
+  job                      StudentJob         @default(other)
+  telegram                 String? 
+  access_expires_at        DateTime?
+  status                   StudentStatus?     @default(new)
+
+  user                     user               @relation(fields: [user_id], references: [id])
+  user_id                  String             @unique
+    
+  seller                   seller?            @relation(fields: [seller_id], references: [id])
+  seller_id                String?
+
+  group                    group?             @relation(fields: [group_id], references: [id])
+  group_id                 String?
+
+  sales                    sale[]
+  attendances              attendance[]
+  lesson_attendances       lesson_attendance[]
+  sale_break_downs         sale_break_down[]
+  group_students           group_student[] 
+  assignment_submissions   assignment_submission[]
+
+  student_statuses         student_status[]
+  frozen_periods           student_frozen[]
+  dropped                  student_dropped[]
+}

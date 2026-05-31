@@ -1,0 +1,16 @@
+
+
+model lesson_attendance {
+  id                        String        @id @default(uuid())
+  total_minutes             Int?     
+  lesson_duration_minutes   Int?     
+  attendance_percentage     Float?   
+  first_seen                DateTime?     
+  last_seen                 DateTime?  
+
+  student                   student       @relation(fields: [student_id], references: [id])
+  student_id                String  
+
+  online_lesson             online_lesson @relation(fields: [online_lesson_id], references: [id])
+  online_lesson_id          String 
+}

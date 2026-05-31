@@ -1,0 +1,41 @@
+
+enum TransferReason {
+  mentor_issue
+  schedule_conflict
+  level_change
+  personal
+  other
+}
+
+
+model group_student {
+  id             String         @id @default(uuid())
+  group_id       String
+  student_id     String
+  mentor_id      String?
+  assistant_id   String?
+
+  joined_at      DateTime       @default(now())
+  left_at        DateTime?
+
+  // Transfer ma'lumotlari (null = birinchi marta qo'shilgan)
+  transfer_reason          TransferReason?
+  transfer_comment         String?
+  transfer_created_by      user?    @relation(fields: [transfer_created_by_id], references: [id])
+  transfer_created_by_id   String?
+  affects_mentor_retention Boolean  @default(false)
+
+  // prev record ga pointer (qaysi guruhdan keldi)
+  previous_group_student      group_student?  @relation("TransferChain", fields: [previous_group_student_id], references: [id])
+  previous_group_student_id   String?
+  next_group_student          group_student[] @relation("TransferChain")
+
+  group          group          @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  student        student        @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  mentor         mentor?        @relation("MentorGroupStudents", fields: [mentor_id], references: [id])
+  assistant      mentor?        @relation("AssistantGroupStudents", fields: [assistant_id], references: [id])
+
+  @@unique([group_id, student_id, left_at])
+  @@index([student_id])
+  @@index([group_id])
+}

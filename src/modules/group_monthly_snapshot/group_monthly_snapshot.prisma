@@ -1,0 +1,79 @@
+model group_monthly_snapshot {
+  id                    String   @id @default(uuid())
+  year                  Int
+  month                 Int
+
+  // -----------------------------------------------
+  // TO'LIQ OY (1 - oy oxiri)
+  // -----------------------------------------------
+  active_count_start    Int      @default(0)   // Oy boshi
+  active_count_end      Int      @default(0)   // Oy oxiri
+  joined_count          Int      @default(0)
+  churned_count         Int      @default(0)
+  transferred_out_count Int      @default(0)
+  transferred_in_count  Int      @default(0)
+  expired_count         Int      @default(0)
+  company_churned_count Int      @default(0)
+  mentor_churned_count Int      @default(0)
+  retention_rate        Float?
+  churn_rate            Float?
+  company_churn_rate    Float?
+  mentor_churn_rate    Float?
+  ltv                   Decimal? @db.Decimal(18, 2)
+
+  // -----------------------------------------------
+  // 1-YARM (1 - 15)
+  // -----------------------------------------------
+  h1_active_count_start    Int      @default(0)   // 1-sana boshi
+  h1_active_count_end      Int      @default(0)   // 15-sana oxiri
+  h1_joined_count          Int      @default(0)
+  h1_churned_count         Int      @default(0)
+  h1_transferred_out_count Int      @default(0)
+  h1_transferred_in_count  Int      @default(0)
+  h1_expired_count         Int      @default(0)
+  h1_company_churned_count Int      @default(0)
+  h1_mentor_churned_count Int      @default(0)
+  h1_retention_rate        Float?
+  h1_churn_rate            Float?
+  h1_company_churn_rate    Float?
+  h1_mentor_churn_rate    Float?
+  h1_ltv                   Decimal? @db.Decimal(18, 2)
+  h1_calculated_at         DateTime?
+
+  // -----------------------------------------------
+  // 2-YARM (16 - oy oxiri)
+  // -----------------------------------------------
+  h2_active_count_start    Int      @default(0)   // 16-sana boshi
+  h2_active_count_end      Int      @default(0)   // Oy oxiri
+  h2_joined_count          Int      @default(0)
+  h2_churned_count         Int      @default(0)
+  h2_transferred_out_count Int      @default(0)
+  h2_transferred_in_count  Int      @default(0)
+  h2_expired_count         Int      @default(0)
+  h2_company_churned_count Int      @default(0)
+  h2_mentor_churned_count Int      @default(0)
+  h2_retention_rate        Float?
+  h2_churn_rate            Float?
+  h2_company_churn_rate    Float?
+  h2_mentor_churn_rate    Float?
+  h2_ltv                   Decimal? @db.Decimal(18, 2)
+  h2_calculated_at         DateTime?
+
+  // -----------------------------------------------
+  // RELATIONS
+  // -----------------------------------------------
+  group                 group    @relation(fields: [group_id], references: [id])
+  group_id              String
+
+  mentor                mentor?  @relation("SnapshotMentor", fields: [mentor_id], references: [id])
+  mentor_id             String?
+
+  assistant             mentor?  @relation("SnapshotAssistant", fields: [assistant_id], references: [id])
+  assistant_id          String?
+
+  calculated_at         DateTime @default(now())  // To'liq oy hisoblangan vaqt
+
+  @@unique([group_id, year, month])
+  @@index([mentor_id, year, month])
+  @@index([year, month])
+}

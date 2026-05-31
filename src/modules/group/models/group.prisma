@@ -1,0 +1,44 @@
+
+enum GroupStatus {
+  collecting
+  active
+  paused
+  closed
+}
+
+model group {
+  id                 String           @id @default(uuid())
+  name               String      
+  created_at         DateTime         @default(now())
+  status             GroupStatus      @default(collecting)
+  max_students       Int              @default(25)
+
+  level              group_level?     @relation(fields: [level_id], references: [id])
+  level_id           String?    
+
+  mentor             mentor?          @relation("MentorGroups", fields: [mentor_id], references: [id])
+  mentor_id          String?  
+
+  assistant          mentor?          @relation("AssistantGroups", fields: [assistant_id], references: [id])
+  assistant_id       String? 
+
+  students           student[] 
+  attendances        attendance[] 
+  group_students     group_student[] 
+  assignments        assignment[]
+
+  monthly_snapshots      group_monthly_snapshot[]
+  status_histories       student_status[]
+  frozen_histories       student_frozen[]
+  dropped_histories      student_dropped[]
+  online_lessons         online_lesson[]
+}
+
+
+model group_level {
+  id             String       @id @default(uuid())
+  level          String      
+  created_at     DateTime     @default(now()) 
+
+  groups         group[]  
+}
