@@ -49,6 +49,7 @@ export class UserRepository {
         include: { [role]: true },
       })
       .catch((err) => {
+        console.log(id, role);
         throw new BadRequestException(err.toString());
       });
     return { ...user, password: null };
