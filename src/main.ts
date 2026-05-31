@@ -1,13 +1,19 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as path from 'path';
 import { AppModule } from './app.module';
 import { ErrorFilter } from './common/filters';
 import { AccessTokenUserGuard } from './modules/auth/passport-strategies/access-token-user/access-token-user.guard';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['log', 'warn', 'error'],
+  });
+
+  app.useStaticAssets(path.join(process.cwd(), 'uploads'), {
+    prefix: '/uploads',
   });
 
   app.enableCors({
@@ -27,18 +33,13 @@ async function bootstrap() {
   );
 
   const reflector = app.get(Reflector);
-  app.useGlobalGuards(
-    new AccessTokenUserGuard(reflector),
-  );
+  app.useGlobalGuards(new AccessTokenUserGuard(reflector));
 
   const config = new DocumentBuilder()
     .setTitle('My English')
     .setDescription('my english API description')
     .setVersion('0.1')
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'access-token',
-    )
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
     .addSecurityRequirements('access-token')
     .build();
 

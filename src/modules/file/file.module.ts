@@ -1,5 +1,4 @@
 import { Global, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { FileController } from './file.controller';
 import { FileService } from './file.service';
 import { FileRepository } from './file.repository';
@@ -8,9 +7,9 @@ import { PrismaModule } from '../_prisma/prisma.module';
 
 @Global()
 @Module({
-  imports: [ConfigModule, PrismaModule],
+  imports: [PrismaModule],
   controllers: [FileController],
   providers: [FileService, FileRepository, StorageService],
-  exports: [FileService], // Boshqa modullar import qilishi uchun
+  exports: [FileService],
 })
 export class FileModule {}

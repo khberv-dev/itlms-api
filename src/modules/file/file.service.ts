@@ -1,13 +1,8 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { StorageService } from './storage.service';
 import { FileRepository } from './file.repository';
-import { UploadFileDto, FileResponseDto } from './dto';
+import { FileResponseDto, UploadFileDto } from './dto';
 import { file } from '@prisma/client';
 
 @Injectable()
@@ -17,7 +12,7 @@ export class FileService {
   constructor(
     private readonly storageService: StorageService,
     private readonly fileRepository: FileRepository,
-  ) { }
+  ) {}
 
   /**
    * Fayl yuklash:
@@ -28,11 +23,7 @@ export class FileService {
    * Keyin boshqa modul (user avatar, task file) bu faylni
    * o'z modeliga bog'laydi va activate() ni chaqiradi
    */
-  async upload(
-    file: Express.Multer.File,
-    dto: UploadFileDto = {},
-    delete_id?: string
-  ): Promise<FileResponseDto> {
+  async upload(file: Express.Multer.File, dto: UploadFileDto = {}, delete_id?: string): Promise<FileResponseDto> {
     if (!file) {
       throw new BadRequestException('Fayl yuklanmadi');
     }
@@ -63,17 +54,12 @@ export class FileService {
   /**
    * Ko'p fayl yuklash (task attachments uchun)
    */
-  async uploadMany(
-    files: Express.Multer.File[],
-    dto: UploadFileDto = {},
-  ): Promise<FileResponseDto[]> {
+  async uploadMany(files: Express.Multer.File[], dto: UploadFileDto = {}): Promise<FileResponseDto[]> {
     if (!files || files.length === 0) {
       throw new BadRequestException('Fayllar yuklanmadi');
     }
 
-    const results = await Promise.all(
-      files.map((file) => this.upload(file, dto)),
-    );
+    const results = await Promise.all(files.map((file) => this.upload(file, dto)));
     return results;
   }
 
@@ -105,7 +91,7 @@ export class FileService {
     // DB dan o'chirish
     await this.fileRepository.delete(id);
 
-    return { message: 'Fayl muvaffaqiyatli o\'chirildi' };
+    return { message: "Fayl muvaffaqiyatli o'chirildi" };
   }
 
   /**
