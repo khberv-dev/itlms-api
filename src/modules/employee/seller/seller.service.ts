@@ -4,7 +4,7 @@ import { SellerRepository } from './seller.repository';
 import { UserService } from 'src/modules/user/user.service';
 import { Role } from '@prisma/client';
 import { CreateSellerDto, UpdateSellerDto } from './dto';
-import { getAmocrmUsers } from 'src/common/helpers/bitrix';
+import { getAmocrmUsers } from 'src/common/helpers/amocrm';
 import { pickFields } from 'src/common/helpers';
 
 @Injectable()
